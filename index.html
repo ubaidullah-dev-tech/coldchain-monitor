@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ColdChain Monitor</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 0 0 30px 0; }
+    header { background: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 10; }
+    header h1 { font-size: 1.15rem; margin: 0; }
+    .btn { background: #334155; color: #f8fafc; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+    .btn.active { background: #0284c7; }
+    .container { max-width: 700px; margin: auto; padding: 16px; }
+    .status { text-align: center; padding: 12px; border-radius: 10px; font-weight: bold; margin-bottom: 16px; font-size: 0.95rem; }
+    .normal { background: #14532d; color: #86efac; }
+    .alert { background: #7f1d1d; color: #fca5a5; animation: blink 1s infinite; }
+    @keyframes blink { 50% { opacity: 0.55; } }
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .card { background: #1e293b; padding: 18px 12px; border-radius: 12px; text-align: center; border: 1px solid #334155; }
+    .card h2 { margin: 0; font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card .val { font-size: 2rem; font-weight: bold; margin-top: 8px; color: #38bdf8; }
+    .card .val.hum { color: #34d399; }
+    .box { background: #1e293b; padding: 14px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #334155; }
+    .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .box-header h3 { margin: 0; font-size: 0.95rem; color: #cbd5e1; }
+    .time { text-align: center; color: #94a3b8; font-size: 0.8rem; margin-bottom: 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #334155; }
+    th { color: #94a3b8; font-weight: 600; }
+    .hot { color: #f87171; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>❄️ Truck 01 Live</h1>
+    <button id="soundBtn" class="btn">🔇 Sound: OFF</button>
+  </header>
+
+  <div class="container">
+    <div id="statusBox" class="status normal">Connecting to Firebase...</div>
+
+    <div class="cards">
+      <div class="card">
+        <h2>Temperature</h2>
+        <div id="tempVal" class="val">-- °C</div>
+      </div>
+      <div class="card">
+        <h2>Humidity</h2>
+        <div id="humVal" class="val hum">-- %</div>
+      </div>
+    </div>
+
+    <div id="lastUpdate" class="time">Last Update: --</div>
+
+    <div class="box">
+      <div class="box-header">
+        <h3>Live Temperature Trend</h3>
+      </div>
+      <canvas id="tempChart"></canvas>
+    </div>
+
+    <div class="box">
+      <div class="box-header">
+        <h3>Recent Logs</h3>
+        <button id="csvBtn" class="btn">⬇️ Export CSV</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Temp (°C)</th>
+            <th>Hum (%)</th>
+          </tr>
+        </thead>
+        <tbody id="logTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, query, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // Service Worker Register (PWA ke liye zaroori)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+
+    const firebaseConfig = {
+      databaseURL: "https://coldchain-logistics-cc3d5-default-rtdb.firebaseio.com/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let soundEnabled = false;
+    let lastAlertTime = "";
+    let currentEntries = [];
+
+    // Beep Sound Function (bina kisi audio file ke)
+    function playBeep() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.3);
+    }
+
+    const soundBtn = document.getElementById('soundBtn');
+    soundBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundBtn.innerText = soundEnabled ? "🔔 Sound: ON" : "🔇 Sound: OFF";
+      soundBtn.classList.toggle('active', soundEnabled);
+      if (soundEnabled) playBeep();
+    });
+
+    // CSV Download
+    document.getElementById('csvBtn').addEventListener('click', () => {
+      if (!currentEntries.length) return;
+      let csv = "Timestamp,Temperature (C),Humidity (%)\n";
+      currentEntries.forEach(e => {
+        csv += `${e.timestamp},${e.temperature},${e.humidity}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "truck01_coldchain_logs.csv";
+      a.click();
+    });
+
+    // Chart Setup
+    const ctx = document.getElementById('tempChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Temp (°C)',
+          data: [],
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56, 189, 248, 0.15)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+          y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+        }
+      }
+    });
+
+    // Firebase se aakhri 20 readings live uthana
+    const truckRef = query(ref(db, 'logistics/truck_01'), limitToLast(20));
+
+    onValue(truckRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      const entries = Object.values(data);
+      currentEntries = entries;
+      const latest = entries[entries.length - 1];
+
+      // Cards Update
+      document.getElementById('tempVal').innerText = `${latest.temperature} °C`;
+      document.getElementById('humVal').innerText = `${latest.humidity} %`;
+      document.getElementById('lastUpdate').innerText = `Last Update: ${latest.timestamp}`;
+
+      // Alert Logic (> 8.0 C)
+      const statusBox = document.getElementById('statusBox');
+      if (latest.temperature > 8.0) {
+        statusBox.className = "status alert";
+        statusBox.innerText = `⚠️ ALERT: High Temperature (${latest.temperature} °C)!`;
+        if (soundEnabled && lastAlertTime !== latest.timestamp) {
+          playBeep();
+          lastAlertTime = latest.timestamp;
+        }
+      } else {
+        statusBox.className = "status normal";
+        statusBox.innerText = "✅ Cooling Normal (Safe Range)";
+      }
+
+      // Graph Update
+      chart.data.labels = entries.map(e => e.timestamp.split(' ')[1] || e.timestamp);
+      chart.data.datasets[0].data = entries.map(e => e.temperature);
+      chart.update();
+
+      // Table Update (latest upar)
+      const tbody = document.getElementById('logTable');
+      tbody.innerHTML = entries.slice().reverse().slice(0, 8).map(e => `
+        <tr>
+          <td>${e.timestamp.split(' ')[1] || e.timestamp}</td>
+          <td class="${e.temperature > 8.0 ? 'hot' : ''}">${e.temperature}</td>
+          <td>${e.humidity}</td>
+        </tr>
+      `).join('');
+    });
+  </script>
+</body>
+</html>
