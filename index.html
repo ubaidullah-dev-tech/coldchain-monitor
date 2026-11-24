@@ -52,7 +52,7 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif !important; }
     body { background: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; transition: background 0.25s, color 0.25s; }
 
-    /* Login View (Opens Immediately - No Blocking Loader) */
+    /* Login View Opens Immediately Every Launch */
     #loginView {
       min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
     }
@@ -196,7 +196,7 @@
 </head>
 <body>
 
-  <!-- 1. LOGIN SCREEN -->
+  <!-- 1. LOGIN SCREEN (Required on every app launch) -->
   <div id="loginView">
     <div class="login-card">
       <div class="login-head">
@@ -209,15 +209,15 @@
 
       <div id="loginErr" class="login-err"></div>
 
-      <form id="loginForm">
+      <form id="loginForm" autocomplete="off">
         <div class="field">
           <label>Operator Email</label>
-          <input type="email" id="loginEmail" placeholder="admin@coldchain.com" required autocomplete="email">
+          <input type="email" id="loginEmail" placeholder="Enter your email" required autocomplete="off">
         </div>
         <div class="field">
           <label>Password</label>
           <div class="pass-wrap">
-            <input type="password" id="loginPass" placeholder="••••••••" required autocomplete="current-password">
+            <input type="password" id="loginPass" placeholder="Enter your password" required autocomplete="new-password">
             <button type="button" id="togglePassBtn" class="pass-toggle">Show</button>
           </div>
         </div>
@@ -376,8 +376,8 @@
           <div class="box-header"><h3>Operator Session</h3></div>
           <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px 0; line-height:1.6;">
             <strong>Signed in as:</strong> <span id="userEmailLbl" style="color:var(--text);">--</span><br>
-            <strong>Vehicle:</strong> Truck 01 (ESP32 + SHT31 + DS3231)<br>
-            <strong>Pipeline:</strong> Micro-ROS → ROS 2 Humble → Firebase RTDB
+            <strong>Session Mode:</strong> Auto-lock on app close<br>
+            <strong>Vehicle:</strong> Truck 01 (ESP32 + SHT31 + DS3231)
           </p>
           <button id="logoutBtn" class="btn danger">Sign Out</button>
         </div>
@@ -406,8 +406,12 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { initializeAuth, inMemoryPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getDatabase, ref, query, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // Clean any old persistent login flags
+    localStorage.removeItem('cc_logged_in');
+    localStorage.removeItem('cc_user_email');
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js?v=4').then(r => r.update());
@@ -424,7 +428,8 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    // In-Memory Persistence: Requires login again whenever app is closed from Recent Apps
+    const auth = initializeAuth(app, { persistence: inMemoryPersistence });
     const db = getDatabase(app);
 
     // Theme
@@ -471,6 +476,9 @@
       loginSubmitBtn.innerText = 'Signing in...';
       try {
         await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value.trim(), loginPass.value);
+        loginForm.reset();
+        loginPass.type = 'password';
+        togglePassBtn.innerText = 'Show';
       } catch (err) {
         loginErr.style.display = 'block';
         loginErr.innerText = err.code === 'auth/invalid-credential'
@@ -482,7 +490,9 @@
       }
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      signOut(auth);
+    });
 
     // Settings
     let config = {
@@ -521,7 +531,7 @@
       if (currentEntries.length) renderAll(currentEntries);
     });
 
-    // Safe Map Setup
+    // Map Setup
     let map = null, marker = null;
     try {
       if (window.L) {
@@ -563,7 +573,7 @@
       });
     });
 
-    // Safe Chart Setup
+    // Chart Setup
     let activeMetric = 'temp', blueGrad = null, greenGrad = null;
     try {
       if (window.Chart) {
