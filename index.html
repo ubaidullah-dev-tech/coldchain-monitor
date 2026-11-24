@@ -52,9 +52,9 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif !important; }
     body { background: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; transition: background 0.25s, color 0.25s; }
 
-    /* Login View Opens Immediately Every Launch */
+    /* Hidden initially; instant session check prevents login flash on refresh */
     #loginView {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+      min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 20px;
     }
     .login-card {
       width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border);
@@ -196,7 +196,7 @@
 </head>
 <body>
 
-  <!-- 1. LOGIN SCREEN (Required on every app launch) -->
+  <!-- 1. LOGIN SCREEN -->
   <div id="loginView">
     <div class="login-card">
       <div class="login-head">
@@ -404,12 +404,26 @@
     </nav>
   </div>
 
+  <!-- Instant Session Router (Prevents login flash on refresh; clears on app close) -->
+  <script>
+    (function() {
+      if (localStorage.getItem('cc_theme') === 'light') {
+        document.body.setAttribute('data-theme', 'light');
+      }
+      if (sessionStorage.getItem('cc_active_session') === 'true') {
+        document.getElementById('appView').style.display = 'block';
+        document.getElementById('userEmailLbl').innerText = sessionStorage.getItem('cc_user_email') || 'Operator';
+      } else {
+        document.getElementById('loginView').style.display = 'flex';
+      }
+    })();
+  </script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { initializeAuth, inMemoryPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { initializeAuth, browserSessionPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getDatabase, ref, query, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    // Clean any old persistent login flags
     localStorage.removeItem('cc_logged_in');
     localStorage.removeItem('cc_user_email');
 
@@ -428,8 +442,8 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    // In-Memory Persistence: Requires login again whenever app is closed from Recent Apps
-    const auth = initializeAuth(app, { persistence: inMemoryPersistence });
+    // Session Persistence: Survives page refresh, but requires login again when app is closed from Recent Apps
+    const auth = initializeAuth(app, { persistence: browserSessionPersistence });
     const db = getDatabase(app);
 
     // Theme
@@ -475,7 +489,9 @@
       loginSubmitBtn.disabled = true;
       loginSubmitBtn.innerText = 'Signing in...';
       try {
-        await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value.trim(), loginPass.value);
+        const cred = await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value.trim(), loginPass.value);
+        sessionStorage.setItem('cc_active_session', 'true');
+        sessionStorage.setItem('cc_user_email', cred.user.email || '');
         loginForm.reset();
         loginPass.type = 'password';
         togglePassBtn.innerText = 'Show';
@@ -491,6 +507,8 @@
     });
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('cc_active_session');
+      sessionStorage.removeItem('cc_user_email');
       signOut(auth);
     });
 
@@ -754,6 +772,8 @@
     let unsubscribeDb = null;
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        sessionStorage.setItem('cc_active_session', 'true');
+        sessionStorage.setItem('cc_user_email', user.email || '');
         document.getElementById('loginView').style.display = 'none';
         document.getElementById('appView').style.display = 'block';
         document.getElementById('userEmailLbl').innerText = user.email;
@@ -768,6 +788,8 @@
           });
         }
       } else {
+        sessionStorage.removeItem('cc_active_session');
+        sessionStorage.removeItem('cc_user_email');
         if (unsubscribeDb) { unsubscribeDb(); unsubscribeDb = null; }
         document.getElementById('appView').style.display = 'none';
         document.getElementById('loginView').style.display = 'flex';
