@@ -3,106 +3,271 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ColdChain Monitor</title>
+  <title>ColdChain Pro</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 0 0 30px 0; }
-    header { background: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 10; }
-    header h1 { font-size: 1.15rem; margin: 0; }
-    .btn { background: #334155; color: #f8fafc; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 0 0 78px 0; }
+    header { background: #1e293b; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 20; }
+    .brand { display: flex; flex-direction: column; }
+    .brand h1 { font-size: 1.05rem; margin: 0; }
+    .conn-badge { font-size: 0.72rem; margin-top: 3px; display: inline-flex; align-items: center; gap: 5px; color: #94a3b8; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #64748b; display: inline-block; }
+    .dot.online { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    .dot.offline { background: #ef4444; }
+    .btn { background: #334155; color: #f8fafc; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
     .btn.active { background: #0284c7; }
-    .container { max-width: 700px; margin: auto; padding: 16px; }
-    .status { text-align: center; padding: 12px; border-radius: 10px; font-weight: bold; margin-bottom: 16px; font-size: 0.95rem; }
-    .normal { background: #14532d; color: #86efac; }
-    .alert { background: #7f1d1d; color: #fca5a5; animation: blink 1s infinite; }
-    @keyframes blink { 50% { opacity: 0.55; } }
-    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    .card { background: #1e293b; padding: 18px 12px; border-radius: 12px; text-align: center; border: 1px solid #334155; }
-    .card h2 { margin: 0; font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-    .card .val { font-size: 2rem; font-weight: bold; margin-top: 8px; color: #38bdf8; }
+    .btn.primary { background: #0284c7; width: 100%; padding: 12px; font-size: 0.9rem; margin-top: 10px; }
+    .container { max-width: 700px; margin: auto; padding: 14px; }
+    .tab-view { display: none; }
+    .tab-view.active { display: block; }
+    .status { text-align: center; padding: 12px; border-radius: 10px; font-weight: 700; margin-bottom: 14px; font-size: 0.9rem; }
+    .normal { background: #14532d; color: #86efac; border: 1px solid #166534; }
+    .warn { background: #713f12; color: #fde047; border: 1px solid #854d0e; }
+    .alert { background: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; animation: blink 1s infinite; }
+    @keyframes blink { 50% { opacity: 0.6; } }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .card { background: #1e293b; padding: 14px 12px; border-radius: 12px; text-align: center; border: 1px solid #334155; }
+    .card h2 { margin: 0; font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card .val { font-size: 1.75rem; font-weight: 700; margin-top: 6px; color: #38bdf8; }
     .card .val.hum { color: #34d399; }
-    .box { background: #1e293b; padding: 14px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #334155; }
-    .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .box-header h3 { margin: 0; font-size: 0.95rem; color: #cbd5e1; }
-    .time { text-align: center; color: #94a3b8; font-size: 0.8rem; margin-bottom: 16px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #334155; }
+    .card .val.bat { color: #a78bfa; }
+    .card .val.dew { color: #fbbf24; }
+    .card .sub { font-size: 0.72rem; color: #94a3b8; margin-top: 4px; }
+    .bat-bar-bg { width: 100%; height: 6px; background: #334155; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+    .bat-bar { height: 100%; width: 0%; background: #22c55e; transition: width 0.4s; }
+    .box { background: #1e293b; padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1px solid #334155; }
+    .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
+    .box-header h3 { margin: 0; font-size: 0.92rem; color: #e2e8f0; }
+    .time { text-align: center; color: #94a3b8; font-size: 0.78rem; margin-bottom: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid #334155; }
     th { color: #94a3b8; font-weight: 600; }
-    .hot { color: #f87171; font-weight: bold; }
+    .hot { color: #f87171; font-weight: 700; }
+    .cold { color: #60a5fa; font-weight: 700; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 0.82rem; color: #cbd5e1; margin-bottom: 6px; }
+    .field input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #f8fafc; font-size: 0.95rem; }
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #334155; font-size: 0.88rem; }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; border-top: 1px solid #334155; display: flex; justify-content: space-around; padding: 8px 0 10px 0; z-index: 30; }
+    .nav-item { background: none; border: none; color: #94a3b8; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 16px; }
+    .nav-item span.ico { font-size: 1.2rem; }
+    .nav-item.active { color: #38bdf8; font-weight: 700; }
   </style>
 </head>
 <body>
   <header>
-    <h1>❄️ Truck 01 Live</h1>
-    <button id="soundBtn" class="btn">🔇 Sound: OFF</button>
+    <div class="brand">
+      <h1>❄️ ColdChain Pro — Truck 01</h1>
+      <div class="conn-badge"><span id="connDot" class="dot"></span><span id="connText">Connecting...</span></div>
+    </div>
+    <button id="soundBtn" class="btn">🔇 Muted</button>
   </header>
 
   <div class="container">
-    <div id="statusBox" class="status normal">Connecting to Firebase...</div>
+    <!-- TAB 1: LIVE MONITOR -->
+    <section id="tab-live" class="tab-view active">
+      <div id="statusBox" class="status normal">Connecting to Firebase...</div>
 
-    <div class="cards">
-      <div class="card">
-        <h2>Temperature</h2>
-        <div id="tempVal" class="val">-- °C</div>
+      <div class="grid-2">
+        <div class="card">
+          <h2>Temperature</h2>
+          <div id="tempVal" class="val">-- °C</div>
+          <div id="tempRangeTxt" class="sub">Safe: 2°C – 8°C</div>
+        </div>
+        <div class="card">
+          <h2>Humidity</h2>
+          <div id="humVal" class="val hum">-- %</div>
+          <div id="humRangeTxt" class="sub">Limit: &lt; 75%</div>
+        </div>
+        <div class="card">
+          <h2>Battery Health</h2>
+          <div id="batVal" class="val bat">-- %</div>
+          <div id="batSub" class="sub">Awaiting ESP32 ADC</div>
+          <div class="bat-bar-bg"><div id="batBar" class="bat-bar"></div></div>
+        </div>
+        <div class="card">
+          <h2>Dew Point</h2>
+          <div id="dewVal" class="val dew">-- °C</div>
+          <div id="dewSub" class="sub">Condensation Risk</div>
+        </div>
       </div>
-      <div class="card">
-        <h2>Humidity</h2>
-        <div id="humVal" class="val hum">-- %</div>
-      </div>
-    </div>
 
-    <div id="lastUpdate" class="time">Last Update: --</div>
+      <div id="lastUpdate" class="time">Last Update: --</div>
 
-    <div class="box">
-      <div class="box-header">
-        <h3>Live Temperature Trend</h3>
+      <div class="box">
+        <div class="box-header">
+          <h3>Live Temp & Humidity Trend</h3>
+        </div>
+        <canvas id="tempChart"></canvas>
       </div>
-      <canvas id="tempChart"></canvas>
-    </div>
+    </section>
 
-    <div class="box">
-      <div class="box-header">
-        <h3>Recent Logs</h3>
-        <button id="csvBtn" class="btn">⬇️ Export CSV</button>
+    <!-- TAB 2: ANALYTICS & LOGS -->
+    <section id="tab-logs" class="tab-view">
+      <div class="grid-3">
+        <div class="card">
+          <h2>Min Temp</h2>
+          <div id="statMin" class="val" style="font-size:1.3rem;">--</div>
+        </div>
+        <div class="card">
+          <h2>Avg Temp</h2>
+          <div id="statAvg" class="val" style="font-size:1.3rem;">--</div>
+        </div>
+        <div class="card">
+          <h2>Max Temp</h2>
+          <div id="statMax" class="val" style="font-size:1.3rem;">--</div>
+        </div>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Temp (°C)</th>
-            <th>Hum (%)</th>
-          </tr>
-        </thead>
-        <tbody id="logTable"></tbody>
-      </table>
-    </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h2>Compliance Score</h2>
+          <div id="statComp" class="val hum" style="font-size:1.5rem;">-- %</div>
+          <div class="sub">Within safe range</div>
+        </div>
+        <div class="card">
+          <h2>Total Breaches</h2>
+          <div id="statBreach" class="val" style="font-size:1.5rem; color:#f87171;">0</div>
+          <div class="sub">In last 50 readings</div>
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="box-header">
+          <h3>Sensor Logs</h3>
+          <div>
+            <button id="filterBreachBtn" class="btn">⚠️ Breaches Only</button>
+            <button id="csvBtn" class="btn">⬇️ CSV</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Temp</th>
+              <th>Hum</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="logTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 3: SETTINGS -->
+    <section id="tab-settings" class="tab-view">
+      <div class="box">
+        <div class="box-header"><h3>Alert Thresholds</h3></div>
+        <div class="field">
+          <label>Min Safe Temp (°C) — Freezing Alert</label>
+          <input type="number" step="0.5" id="inpMinTemp">
+        </div>
+        <div class="field">
+          <label>Max Safe Temp (°C) — Overheat Alert</label>
+          <input type="number" step="0.5" id="inpMaxTemp">
+        </div>
+        <div class="field">
+          <label>Max Safe Humidity (%)</label>
+          <input type="number" step="1" id="inpMaxHum">
+        </div>
+        <div class="toggle-row">
+          <span>Mobile Vibration on Alert</span>
+          <input type="checkbox" id="inpVibe" style="width:20px; height:20px;">
+        </div>
+        <button id="saveSettingsBtn" class="btn primary">💾 Save Settings</button>
+        <div id="saveMsg" class="time" style="margin-top:8px; color:#86efac;"></div>
+      </div>
+
+      <div class="box">
+        <div class="box-header"><h3>System Info</h3></div>
+        <p style="font-size:0.82rem; color:#94a3b8; margin:0; line-height:1.6;">
+          <strong>Node:</strong> Truck 01 (ESP32 + SHT31 + DS3231)<br>
+          <strong>Pipeline:</strong> Micro-ROS → ROS 2 Humble → Firebase RTDB<br>
+          <strong>Database Path:</strong> <code>logistics/truck_01</code>
+        </p>
+      </div>
+    </section>
   </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-tab="tab-live"><span class="ico">📡</span>Live</button>
+    <button class="nav-item" data-tab="tab-logs"><span class="ico">📊</span>Analytics</button>
+    <button class="nav-item" data-tab="tab-settings"><span class="ico">⚙️</span>Settings</button>
+  </nav>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, query, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    // Service Worker Register (PWA ke liye zaroori)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js');
     }
 
-    const firebaseConfig = {
+    const app = initializeApp({
       databaseURL: "https://coldchain-logistics-cc3d5-default-rtdb.firebaseio.com/"
-    };
-
-    const app = initializeApp(firebaseConfig);
+    });
     const db = getDatabase(app);
 
+    // Settings (LocalStorage)
+    let config = {
+      minTemp: parseFloat(localStorage.getItem('cc_minTemp') || '2.0'),
+      maxTemp: parseFloat(localStorage.getItem('cc_maxTemp') || '8.0'),
+      maxHum: parseFloat(localStorage.getItem('cc_maxHum') || '75.0'),
+      vibe: localStorage.getItem('cc_vibe') !== 'false'
+    };
+
+    const inpMinTemp = document.getElementById('inpMinTemp');
+    const inpMaxTemp = document.getElementById('inpMaxTemp');
+    const inpMaxHum = document.getElementById('inpMaxHum');
+    const inpVibe = document.getElementById('inpVibe');
+
+    function loadSettingsUI() {
+      inpMinTemp.value = config.minTemp;
+      inpMaxTemp.value = config.maxTemp;
+      inpMaxHum.value = config.maxHum;
+      inpVibe.checked = config.vibe;
+      document.getElementById('tempRangeTxt').innerText = `Safe: ${config.minTemp}°C – ${config.maxTemp}°C`;
+      document.getElementById('humRangeTxt').innerText = `Limit: < ${config.maxHum}%`;
+    }
+    loadSettingsUI();
+
+    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+      config.minTemp = parseFloat(inpMinTemp.value);
+      config.maxTemp = parseFloat(inpMaxTemp.value);
+      config.maxHum = parseFloat(inpMaxHum.value);
+      config.vibe = inpVibe.checked;
+      localStorage.setItem('cc_minTemp', config.minTemp);
+      localStorage.setItem('cc_maxTemp', config.maxTemp);
+      localStorage.setItem('cc_maxHum', config.maxHum);
+      localStorage.setItem('cc_vibe', config.vibe);
+      loadSettingsUI();
+      document.getElementById('saveMsg').innerText = "✅ Settings saved!";
+      setTimeout(() => document.getElementById('saveMsg').innerText = "", 2000);
+      if (currentEntries.length) renderAll(currentEntries);
+    });
+
+    // Bottom Navigation
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
     let soundEnabled = false;
+    let onlyBreaches = false;
     let lastAlertTime = "";
+    let lastDataTimestamp = null;
     let currentEntries = [];
 
-    // Beep Sound Function (bina kisi audio file ke)
     function playBeep() {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const osc = ctx.createOscillator();
@@ -116,95 +281,199 @@
     const soundBtn = document.getElementById('soundBtn');
     soundBtn.addEventListener('click', () => {
       soundEnabled = !soundEnabled;
-      soundBtn.innerText = soundEnabled ? "🔔 Sound: ON" : "🔇 Sound: OFF";
+      soundBtn.innerText = soundEnabled ? "🔔 Sound ON" : "🔇 Muted";
       soundBtn.classList.toggle('active', soundEnabled);
       if (soundEnabled) playBeep();
     });
 
-    // CSV Download
+    const filterBreachBtn = document.getElementById('filterBreachBtn');
+    filterBreachBtn.addEventListener('click', () => {
+      onlyBreaches = !onlyBreaches;
+      filterBreachBtn.classList.toggle('active', onlyBreaches);
+      renderTable(currentEntries);
+    });
+
     document.getElementById('csvBtn').addEventListener('click', () => {
       if (!currentEntries.length) return;
-      let csv = "Timestamp,Temperature (C),Humidity (%)\n";
+      let csv = "Timestamp,Temperature (C),Humidity (%),Battery (%)\n";
       currentEntries.forEach(e => {
-        csv += `${e.timestamp},${e.temperature},${e.humidity}\n`;
+        csv += `${e.timestamp},${e.temperature},${e.humidity},${e.battery ?? ''}\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = "truck01_coldchain_logs.csv";
+      a.href = URL.createObjectURL(blob);
+      a.download = "coldchain_truck01_report.csv";
       a.click();
     });
 
-    // Chart Setup
-    const ctx = document.getElementById('tempChart').getContext('2d');
-    const chart = new Chart(ctx, {
+    // Dual-Axis Chart
+    const chart = new Chart(document.getElementById('tempChart').getContext('2d'), {
       type: 'line',
       data: {
         labels: [],
-        datasets: [{
-          label: 'Temp (°C)',
-          data: [],
-          borderColor: '#38bdf8',
-          backgroundColor: 'rgba(56, 189, 248, 0.15)',
-          tension: 0.3,
-          fill: true
-        }]
+        datasets: [
+          {
+            label: 'Temp (°C)',
+            data: [],
+            borderColor: '#38bdf8',
+            backgroundColor: 'rgba(56, 189, 248, 0.15)',
+            yAxisID: 'y',
+            tension: 0.3,
+            fill: true
+          },
+          {
+            label: 'Humidity (%)',
+            data: [],
+            borderColor: '#34d399',
+            borderDash: [4, 4],
+            yAxisID: 'y1',
+            tension: 0.3,
+            fill: false
+          }
+        ]
       },
       options: {
         responsive: true,
-        plugins: { legend: { display: false } },
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { labels: { color: '#cbd5e1', boxWidth: 12 } } },
         scales: {
-          x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
-          y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+          x: { ticks: { color: '#94a3b8', maxTicksLimit: 6 }, grid: { color: '#334155' } },
+          y: { type: 'linear', position: 'left', ticks: { color: '#38bdf8' }, grid: { color: '#334155' } },
+          y1: { type: 'linear', position: 'right', min: 0, max: 100, ticks: { color: '#34d399' }, grid: { drawOnChartArea: false } }
         }
       }
     });
 
-    // Firebase se aakhri 20 readings live uthana
-    const truckRef = query(ref(db, 'logistics/truck_01'), limitToLast(20));
+    function checkOnlineStatus() {
+      const dot = document.getElementById('connDot');
+      const txt = document.getElementById('connText');
+      if (!lastDataTimestamp) return;
+      const parsed = new Date(lastDataTimestamp.replace(' ', 'T'));
+      const diffSec = (Date.now() - parsed.getTime()) / 1000;
+      if (!isNaN(diffSec) && diffSec < 25) {
+        dot.className = "dot online";
+        txt.innerText = "Live — Sensor Online";
+      } else {
+        dot.className = "dot offline";
+        txt.innerText = "Offline — Showing Last Reading";
+      }
+    }
+    setInterval(checkOnlineStatus, 5000);
 
-    onValue(truckRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
+    function calcDewPoint(T, RH) {
+      const a = 17.27, b = 237.7;
+      const alpha = ((a * T) / (b + T)) + Math.log(Math.max(RH, 1) / 100);
+      return ((b * alpha) / (a - alpha)).toFixed(1);
+    }
 
-      const entries = Object.values(data);
-      currentEntries = entries;
+    function renderTable(entries) {
+      let list = entries.slice().reverse();
+      if (onlyBreaches) {
+        list = list.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp || e.humidity > config.maxHum);
+      }
+      const tbody = document.getElementById('logTable');
+      tbody.innerHTML = list.slice(0, 20).map(e => {
+        const isHot = e.temperature > config.maxTemp;
+        const isCold = e.temperature < config.minTemp;
+        const status = isHot ? '🔴 High' : isCold ? '🔵 Freeze' : e.humidity > config.maxHum ? '🟡 Hum' : '🟢 OK';
+        return `
+          <tr>
+            <td>${e.timestamp.split(' ')[1] || e.timestamp}</td>
+            <td class="${isHot ? 'hot' : isCold ? 'cold' : ''}">${e.temperature}°C</td>
+            <td>${e.humidity}%</td>
+            <td>${status}</td>
+          </tr>`;
+      }).join('') || '<tr><td colspan="4" style="text-align:center;color:#94a3b8;">No matching records</td></tr>';
+    }
+
+    function renderAll(entries) {
       const latest = entries[entries.length - 1];
+      lastDataTimestamp = latest.timestamp;
+      checkOnlineStatus();
 
-      // Cards Update
+      // Main Cards
       document.getElementById('tempVal').innerText = `${latest.temperature} °C`;
       document.getElementById('humVal').innerText = `${latest.humidity} %`;
       document.getElementById('lastUpdate').innerText = `Last Update: ${latest.timestamp}`;
 
-      // Alert Logic (> 8.0 C)
-      const statusBox = document.getElementById('statusBox');
-      if (latest.temperature > 8.0) {
-        statusBox.className = "status alert";
-        statusBox.innerText = `⚠️ ALERT: High Temperature (${latest.temperature} °C)!`;
-        if (soundEnabled && lastAlertTime !== latest.timestamp) {
-          playBeep();
-          lastAlertTime = latest.timestamp;
-        }
+      // Dew Point
+      const dp = calcDewPoint(latest.temperature, latest.humidity);
+      document.getElementById('dewVal').innerText = `${dp} °C`;
+      document.getElementById('dewSub').innerText = (latest.temperature - dp < 2) ? "⚠️ Moisture Risk" : "Dry & Safe";
+
+      // Battery Health
+      const batVal = document.getElementById('batVal');
+      const batSub = document.getElementById('batSub');
+      const batBar = document.getElementById('batBar');
+      if (typeof latest.battery === 'number') {
+        const b = Math.max(0, Math.min(100, latest.battery));
+        batVal.innerText = `${b} %`;
+        batBar.style.width = `${b}%`;
+        if (b > 50) { batBar.style.background = '#22c55e'; batSub.innerText = "Health: Good"; }
+        else if (b > 20) { batBar.style.background = '#eab308'; batSub.innerText = "Health: Moderate"; }
+        else { batBar.style.background = '#ef4444'; batSub.innerText = "⚠️ Low Battery!"; }
       } else {
-        statusBox.className = "status normal";
-        statusBox.innerText = "✅ Cooling Normal (Safe Range)";
+        batVal.innerText = "USB / --";
+        batBar.style.width = "100%";
+        batBar.style.background = "#475569";
+        batSub.innerText = "Awaiting ESP32 ADC";
       }
 
-      // Graph Update
-      chart.data.labels = entries.map(e => e.timestamp.split(' ')[1] || e.timestamp);
-      chart.data.datasets[0].data = entries.map(e => e.temperature);
+      // Status & Alerts
+      const statusBox = document.getElementById('statusBox');
+      let alertTriggered = false;
+      if (latest.temperature > config.maxTemp) {
+        statusBox.className = "status alert";
+        statusBox.innerText = `⚠️ OVERHEAT ALERT: ${latest.temperature} °C (> ${config.maxTemp}°C)`;
+        alertTriggered = true;
+      } else if (latest.temperature < config.minTemp) {
+        statusBox.className = "status alert";
+        statusBox.innerText = `🧊 FREEZING ALERT: ${latest.temperature} °C (< ${config.minTemp}°C)`;
+        alertTriggered = true;
+      } else if (latest.humidity > config.maxHum) {
+        statusBox.className = "status warn";
+        statusBox.innerText = `💧 HIGH HUMIDITY: ${latest.humidity} % (> ${config.maxHum}%)`;
+      } else {
+        statusBox.className = "status normal";
+        statusBox.innerText = "✅ Cooling Normal — All Parameters Safe";
+      }
+
+      if (alertTriggered && lastAlertTime !== latest.timestamp) {
+        if (soundEnabled) playBeep();
+        if (config.vibe && navigator.vibrate) navigator.vibrate([250, 100, 250]);
+        lastAlertTime = latest.timestamp;
+      }
+
+      // Stats
+      const temps = entries.map(e => e.temperature);
+      const minT = Math.min(...temps).toFixed(2);
+      const maxT = Math.max(...temps).toFixed(2);
+      const avgT = (temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(2);
+      const breaches = entries.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp).length;
+      const comp = (((entries.length - breaches) / entries.length) * 100).toFixed(0);
+
+      document.getElementById('statMin').innerText = `${minT}°C`;
+      document.getElementById('statAvg').innerText = `${avgT}°C`;
+      document.getElementById('statMax').innerText = `${maxT}°C`;
+      document.getElementById('statBreach').innerText = breaches;
+      document.getElementById('statComp').innerText = `${comp} %`;
+
+      // Chart (last 20)
+      const recent = entries.slice(-20);
+      chart.data.labels = recent.map(e => e.timestamp.split(' ')[1] || e.timestamp);
+      chart.data.datasets[0].data = recent.map(e => e.temperature);
+      chart.data.datasets[1].data = recent.map(e => e.humidity);
       chart.update();
 
-      // Table Update (latest upar)
-      const tbody = document.getElementById('logTable');
-      tbody.innerHTML = entries.slice().reverse().slice(0, 8).map(e => `
-        <tr>
-          <td>${e.timestamp.split(' ')[1] || e.timestamp}</td>
-          <td class="${e.temperature > 8.0 ? 'hot' : ''}">${e.temperature}</td>
-          <td>${e.humidity}</td>
-        </tr>
-      `).join('');
+      renderTable(entries);
+    }
+
+    const truckRef = query(ref(db, 'logistics/truck_01'), limitToLast(50));
+    onValue(truckRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+      currentEntries = Object.values(data);
+      renderAll(currentEntries);
     });
   </script>
 </body>
