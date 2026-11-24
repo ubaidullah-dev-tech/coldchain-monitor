@@ -54,7 +54,6 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif !important; }
     body { background: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; transition: background 0.25s, color 0.25s; }
 
-    /* Login Screen */
     #loginView {
       min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 20px;
       background: radial-gradient(circle at top right, rgba(2, 132, 199, 0.14), transparent 50%);
@@ -120,7 +119,6 @@
     .tab-view.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Hero Vehicle Card */
     .hero-card {
       background: linear-gradient(135deg, rgba(2, 132, 199, 0.16), rgba(16, 185, 129, 0.08));
       border: 1px solid rgba(56, 189, 248, 0.22);
@@ -137,7 +135,6 @@
     .signal-bars span:nth-child(4) { height: 16px; }
     .signal-bars.off span { background: var(--muted); opacity: 0.35; }
 
-    /* Status Banner */
     .status {
       display: flex; align-items: center; justify-content: center; gap: 8px;
       padding: 11px 14px; border-radius: 12px; font-weight: 600; margin-bottom: 14px; font-size: 0.8rem;
@@ -147,7 +144,6 @@
     .alert { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.4); animation: pulse 1.2s infinite; }
     @keyframes pulse { 50% { opacity: 0.65; } }
 
-    /* Telemetry Cards & Range Meters */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
     .card {
@@ -165,7 +161,6 @@
     .meter-track { width: 100%; height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 9px; position: relative; }
     .meter-fill { height: 100%; width: 0%; background: var(--blue); border-radius: 99px; transition: width 0.45s ease, background 0.3s; }
 
-    /* Boxes & Chart */
     .box { background: var(--surface); padding: 15px; border-radius: 16px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
     .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
     .box-header h3 { margin: 0; font-size: 0.88rem; font-weight: 700; color: var(--text); }
@@ -190,7 +185,6 @@
     .chart-wrap { position: relative; height: 225px; width: 100%; }
     .time { text-align: center; color: var(--muted); font-size: 0.73rem; margin-bottom: 14px; font-weight: 500; }
 
-    /* Map */
     #map { height: 350px; width: 100%; border-radius: 14px; border: 1px solid var(--border); z-index: 1; }
     .leaflet-control-attribution { display: none !important; }
     body:not([data-theme="light"]) .leaflet-tile-pane {
@@ -198,7 +192,6 @@
     }
     .map-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.76rem; color: var(--muted); flex-wrap: wrap; gap: 8px; }
 
-    /* Table */
     table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
     th, td { padding: 10px 5px; text-align: left; border-bottom: 1px solid var(--border); }
     th { color: var(--muted); font-weight: 700; font-size: 0.68rem; text-transform: uppercase; }
@@ -208,7 +201,6 @@
     .pill.cold { background: rgba(56,189,248,0.15); color: var(--blue); }
     .pill.hum { background: rgba(245,158,11,0.15); color: var(--amber); }
 
-    /* Inputs */
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
     .field input {
@@ -218,7 +210,6 @@
     .field input:focus { border-color: var(--blue); }
     .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
 
-    /* Floating Glass Bottom Navigation */
     .bottom-nav {
       position: fixed; bottom: 12px; left: 14px; right: 14px; max-width: 690px; margin: auto;
       background: var(--header-bg); backdrop-filter: blur(16px);
@@ -335,12 +326,12 @@
 
           <div class="card">
             <div class="card-top">
-              <h2>Battery</h2>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg>
+              <h2>Battery Health</h2>
+              <span id="batHealthPill" class="pill cold" style="font-size:0.62rem; padding:2px 6px;">--</span>
             </div>
             <div id="batVal" class="val bat">-- %</div>
             <div class="meter-track"><div id="batBar" class="meter-fill" style="background:var(--purple);"></div></div>
-            <div id="batSub" class="sub">Awaiting ESP32 ADC</div>
+            <div id="batSub" class="sub">Awaiting Battery Sensor</div>
           </div>
 
           <div class="card">
@@ -488,10 +479,9 @@
     </nav>
   </div>
 
-  <!-- Instant Session & 5-Minute Timeout Check -->
   <script>
     (function() {
-      const IDLE_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
+      const IDLE_LIMIT_MS = 5 * 60 * 1000;
       if (localStorage.getItem('cc_theme') === 'light') {
         document.body.setAttribute('data-theme', 'light');
       }
@@ -538,7 +528,6 @@
     const auth = initializeAuth(app, { persistence: browserSessionPersistence });
     const db = getDatabase(app);
 
-    // 5-Minute Inactivity Auto-Lock Monitor
     const IDLE_LIMIT_MS = 5 * 60 * 1000;
 
     function clearSessionStorage() {
@@ -566,16 +555,12 @@
       window.addEventListener(evt, recordActivity, { passive: true });
     });
 
-    // Check immediately when returning from Recent Apps / background
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        checkIdleLock();
-      }
+      if (document.visibilityState === 'visible') checkIdleLock();
     });
     window.addEventListener('focus', checkIdleLock);
     setInterval(checkIdleLock, 5000);
 
-    // Theme
     const sunSVG = `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`;
     const moonSVG = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
     let chart = null;
@@ -598,7 +583,6 @@
       applyTheme(document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
     });
 
-    // Password Toggle
     const loginPass = document.getElementById('loginPass');
     const togglePassBtn = document.getElementById('togglePassBtn');
     togglePassBtn.addEventListener('click', () => {
@@ -607,7 +591,6 @@
       togglePassBtn.innerText = hidden ? 'Hide' : 'Show';
     });
 
-    // Login Form
     const loginForm = document.getElementById('loginForm');
     const loginErr = document.getElementById('loginErr');
     const loginSubmitBtn = document.getElementById('loginSubmitBtn');
@@ -641,7 +624,6 @@
       signOut(auth);
     });
 
-    // Settings
     let config = {
       minTemp: parseFloat(localStorage.getItem('cc_minTemp') || '2.0'),
       maxTemp: parseFloat(localStorage.getItem('cc_maxTemp') || '8.0'),
@@ -678,7 +660,6 @@
       if (allEntries.length) renderAll(allEntries);
     });
 
-    // Map Setup
     let map = null, marker = null;
     try {
       if (window.L) {
@@ -709,7 +690,6 @@
       );
     });
 
-    // Navigation
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -720,7 +700,6 @@
       });
     });
 
-    // Time Filtering Logic (1H, 24H, 7D, 1M, 1Y, All)
     let activeRange = 'all';
     const rangeMsMap = {
       '1h': 3600 * 1000,
@@ -754,7 +733,6 @@
       btn.addEventListener('click', () => syncTimeButtons(btn.dataset.range));
     });
 
-    // Chart Setup with Safe-Zone Reference Lines & Dual Axis
     let activeMetric = 'temp', blueGrad = null, greenGrad = null;
     const thresholdPlugin = {
       id: 'thresholdLines',
@@ -891,8 +869,8 @@
     document.getElementById('csvBtn').addEventListener('click', () => {
       const subset = filterByRange(allEntries, activeRange);
       if (!subset.length) return;
-      let csv = "Timestamp,Temperature (C),Humidity (%),Battery (%),Lat,Lng\n";
-      subset.forEach(e => csv += `${e.timestamp},${e.temperature},${e.humidity},${e.battery ?? ''},${e.lat ?? ''},${e.lng ?? ''}\n`);
+      let csv = "Timestamp,Temperature (C),Humidity (%),Battery (%),Voltage (V),Lat,Lng\n";
+      subset.forEach(e => csv += `${e.timestamp},${e.temperature},${e.humidity},${e.battery ?? ''},${e.voltage ?? ''},${e.lat ?? ''},${e.lng ?? ''}\n`);
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
       a.download = `coldchain_truck01_${activeRange}.csv`;
@@ -973,14 +951,43 @@
       document.getElementById('dewVal').innerText = `${dp} °C`;
       document.getElementById('dewSub').innerText = (latest.temperature - dp < 2) ? "Condensation Risk" : "Dry & Safe";
 
-      const batVal = document.getElementById('batVal'), batSub = document.getElementById('batSub'), batBar = document.getElementById('batBar');
+      // Smart Battery Health & Remaining Percentage
+      const batVal = document.getElementById('batVal');
+      const batSub = document.getElementById('batSub');
+      const batBar = document.getElementById('batBar');
+      const batPill = document.getElementById('batHealthPill');
+
+      let batPct = null;
       if (typeof latest.battery === 'number') {
-        const b = Math.max(0, Math.min(100, latest.battery));
-        batVal.innerText = `${b} %`; batBar.style.width = `${b}%`;
-        batBar.style.background = b > 50 ? '#10b981' : b > 20 ? '#f59e0b' : '#ef4444';
-        batSub.innerText = b > 50 ? "Health: Good" : b > 20 ? "Health: Moderate" : "Low Battery";
+        batPct = Math.max(0, Math.min(100, Math.round(latest.battery)));
+      } else if (typeof latest.voltage === 'number') {
+        // Auto-calculate % from Li-ion 3.3V (0%) to 4.2V (100%)
+        batPct = Math.max(0, Math.min(100, Math.round(((latest.voltage - 3.3) / (4.2 - 3.3)) * 100)));
+      }
+
+      if (batPct !== null) {
+        batVal.innerText = `${batPct} %`;
+        batBar.style.width = `${batPct}%`;
+        const vTxt = typeof latest.voltage === 'number' ? ` • ${latest.voltage.toFixed(2)}V` : '';
+        if (batPct > 60) {
+          batBar.style.background = '#10b981';
+          batPill.className = 'pill ok'; batPill.innerText = 'Healthy';
+          batSub.innerText = `Good Backup${vTxt}`;
+        } else if (batPct > 25) {
+          batBar.style.background = '#f59e0b';
+          batPill.className = 'pill hum'; batPill.innerText = 'Moderate';
+          batSub.innerText = `Charge Soon${vTxt}`;
+        } else {
+          batBar.style.background = '#ef4444';
+          batPill.className = 'pill hot'; batPill.innerText = 'Critical';
+          batSub.innerText = `Low Battery${vTxt}`;
+        }
       } else {
-        batVal.innerText = "USB / --"; batBar.style.width = "100%"; batBar.style.background = "var(--surface-2)"; batSub.innerText = "External Power";
+        batVal.innerText = "N/A";
+        batBar.style.width = "100%";
+        batBar.style.background = "var(--surface-2)";
+        batPill.className = 'pill cold'; batPill.innerText = 'USB Power';
+        batSub.innerText = "No Battery Sensor Connected";
       }
 
       if (typeof latest.lat === 'number' && typeof latest.lng === 'number') {
