@@ -176,7 +176,6 @@
     }
     .seg-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
 
-    /* Time Filter Bar (1H, 24H, 7D, 1M, 1Y, All) */
     .time-bar {
       display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;
       background: var(--bg); padding: 4px; border-radius: 10px; border: 1px solid var(--border);
@@ -366,7 +365,6 @@
             </div>
           </div>
 
-          <!-- Long-Term Time Range Selector -->
           <div class="time-bar" id="liveTimeBar">
             <button class="tf-btn" data-range="1h">1H</button>
             <button class="tf-btn" data-range="24h">24H</button>
@@ -461,7 +459,7 @@
           <div class="box-header"><h3>Operator Session</h3></div>
           <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px 0; line-height:1.6;">
             <strong>Signed in as:</strong> <span id="userEmailLbl" style="color:var(--text);">--</span><br>
-            <strong>Session Mode:</strong> Auto-lock on app close<br>
+            <strong>Auto-Lock Timer:</strong> Locks after 5 min of inactivity<br>
             <strong>Vehicle:</strong> Truck 01 (ESP32 + SHT31 + DS3231)
           </p>
           <button id="logoutBtn" class="btn danger">Sign Out</button>
@@ -490,16 +488,25 @@
     </nav>
   </div>
 
-  <!-- Instant Session Router -->
+  <!-- Instant Session & 5-Minute Timeout Check -->
   <script>
     (function() {
+      const IDLE_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
       if (localStorage.getItem('cc_theme') === 'light') {
         document.body.setAttribute('data-theme', 'light');
       }
-      if (sessionStorage.getItem('cc_active_session') === 'true') {
+      const isActive = sessionStorage.getItem('cc_active_session') === 'true';
+      const lastAct = parseInt(sessionStorage.getItem('cc_last_activity') || '0', 10);
+      const isExpired = (Date.now() - lastAct) > IDLE_LIMIT_MS;
+
+      if (isActive && !isExpired) {
+        sessionStorage.setItem('cc_last_activity', Date.now().toString());
         document.getElementById('appView').style.display = 'block';
         document.getElementById('userEmailLbl').innerText = sessionStorage.getItem('cc_user_email') || 'Operator';
       } else {
+        sessionStorage.removeItem('cc_active_session');
+        sessionStorage.removeItem('cc_user_email');
+        sessionStorage.removeItem('cc_last_activity');
         document.getElementById('loginView').style.display = 'flex';
       }
     })();
@@ -530,6 +537,43 @@
     const app = initializeApp(firebaseConfig);
     const auth = initializeAuth(app, { persistence: browserSessionPersistence });
     const db = getDatabase(app);
+
+    // 5-Minute Inactivity Auto-Lock Monitor
+    const IDLE_LIMIT_MS = 5 * 60 * 1000;
+
+    function clearSessionStorage() {
+      sessionStorage.removeItem('cc_active_session');
+      sessionStorage.removeItem('cc_user_email');
+      sessionStorage.removeItem('cc_last_activity');
+    }
+
+    function recordActivity() {
+      if (auth.currentUser) {
+        sessionStorage.setItem('cc_last_activity', Date.now().toString());
+      }
+    }
+
+    function checkIdleLock() {
+      if (!auth.currentUser) return;
+      const lastAct = parseInt(sessionStorage.getItem('cc_last_activity') || '0', 10);
+      if (lastAct && (Date.now() - lastAct) >= IDLE_LIMIT_MS) {
+        clearSessionStorage();
+        signOut(auth);
+      }
+    }
+
+    ['touchstart', 'click', 'scroll', 'keydown'].forEach(evt => {
+      window.addEventListener(evt, recordActivity, { passive: true });
+    });
+
+    // Check immediately when returning from Recent Apps / background
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkIdleLock();
+      }
+    });
+    window.addEventListener('focus', checkIdleLock);
+    setInterval(checkIdleLock, 5000);
 
     // Theme
     const sunSVG = `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`;
@@ -577,6 +621,7 @@
         const cred = await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value.trim(), loginPass.value);
         sessionStorage.setItem('cc_active_session', 'true');
         sessionStorage.setItem('cc_user_email', cred.user.email || '');
+        sessionStorage.setItem('cc_last_activity', Date.now().toString());
         loginForm.reset();
         loginPass.type = 'password';
         togglePassBtn.innerText = 'Show';
@@ -592,8 +637,7 @@
     });
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
-      sessionStorage.removeItem('cc_active_session');
-      sessionStorage.removeItem('cc_user_email');
+      clearSessionStorage();
       signOut(auth);
     });
 
@@ -781,12 +825,11 @@
       if (!ts) return '';
       const parts = ts.split(' ');
       if (activeRange === '1h' || activeRange === '24h') return (parts[1] || ts).slice(0, 5);
-      return (parts[0] || ts).slice(5); // MM-DD for 7D, 1M, 1Y, All
+      return (parts[0] || ts).slice(5);
     }
 
     function updateChart(entries) {
       if (!chart || !entries.length) return;
-      // Downsample if huge dataset (e.g., 1M or 1Y) so chart stays smooth
       const step = Math.max(1, Math.floor(entries.length / 60));
       const sampled = entries.filter((_, idx) => idx % step === 0);
 
@@ -916,7 +959,6 @@
       document.getElementById('humVal').innerText = `${latest.humidity} %`;
       document.getElementById('lastUpdate').innerText = `Last Telemetry: ${latest.timestamp}`;
 
-      // Live Range Meters
       const tempPct = Math.max(5, Math.min(100, ((latest.temperature + 10) / 45) * 100));
       const tempMeter = document.getElementById('tempMeter');
       tempMeter.style.width = `${tempPct}%`;
@@ -971,13 +1013,15 @@
       if (user) {
         sessionStorage.setItem('cc_active_session', 'true');
         sessionStorage.setItem('cc_user_email', user.email || '');
+        if (!sessionStorage.getItem('cc_last_activity')) {
+          sessionStorage.setItem('cc_last_activity', Date.now().toString());
+        }
         document.getElementById('loginView').style.display = 'none';
         document.getElementById('appView').style.display = 'block';
         document.getElementById('userEmailLbl').innerText = user.email;
         if (map) setTimeout(() => map.invalidateSize(), 200);
 
         if (!unsubscribeDb) {
-          // Fetch up to 2000 historical logs to support 1H, 24H, 7D, 1M, 1Y views
           unsubscribeDb = onValue(query(ref(db, 'logistics/truck_01'), limitToLast(2000)), (snap) => {
             const data = snap.val();
             if (!data) return;
@@ -986,8 +1030,7 @@
           });
         }
       } else {
-        sessionStorage.removeItem('cc_active_session');
-        sessionStorage.removeItem('cc_user_email');
+        clearSessionStorage();
         if (unsubscribeDb) { unsubscribeDb(); unsubscribeDb = null; }
         document.getElementById('appView').style.display = 'none';
         document.getElementById('loginView').style.display = 'flex';
