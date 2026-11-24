@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ColdChain Pro</title>
   <link rel="manifest" href="manifest.json">
-  <meta id="themeColorMeta" name="theme-color" content="#090d16">
+  <meta id="themeColorMeta" name="theme-color" content="#070b14">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -18,55 +18,59 @@
 
   <style>
     :root {
-      --bg: #090d16;
-      --surface: #111827;
-      --surface-2: #1a2335;
-      --header-bg: rgba(17, 24, 39, 0.88);
+      --bg: #070b14;
+      --surface: #0f172a;
+      --surface-2: #1e293b;
+      --header-bg: rgba(15, 23, 42, 0.85);
       --border: rgba(255, 255, 255, 0.08);
       --text: #f8fafc;
       --muted: #94a3b8;
       --blue: #38bdf8;
+      --blue-strong: #0284c7;
       --green: #10b981;
       --red: #ef4444;
       --amber: #f59e0b;
       --purple: #a78bfa;
-      --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
 
     [data-theme="light"] {
       --bg: #f1f5f9;
       --surface: #ffffff;
       --surface-2: #e2e8f0;
-      --header-bg: rgba(255, 255, 255, 0.9);
-      --border: rgba(15, 23, 42, 0.09);
+      --header-bg: rgba(255, 255, 255, 0.88);
+      --border: rgba(15, 23, 42, 0.08);
       --text: #0f172a;
       --muted: #64748b;
       --blue: #0284c7;
+      --blue-strong: #0369a1;
       --green: #059669;
       --red: #dc2626;
       --amber: #d97706;
       --purple: #7c3aed;
-      --shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+      --shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif !important; }
     body { background: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; transition: background 0.25s, color 0.25s; }
 
-    /* Hidden initially; instant session check prevents login flash on refresh */
+    /* Login Screen */
     #loginView {
       min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 20px;
+      background: radial-gradient(circle at top right, rgba(2, 132, 199, 0.14), transparent 50%);
     }
     .login-card {
       width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 18px; padding: 28px 24px; box-shadow: var(--shadow);
+      border-radius: 22px; padding: 30px 24px; box-shadow: var(--shadow);
     }
     .login-head { text-align: center; margin-bottom: 24px; }
     .login-logo {
-      width: 48px; height: 48px; border-radius: 14px; margin: 0 auto 12px auto;
+      width: 52px; height: 52px; border-radius: 16px; margin: 0 auto 14px auto;
       background: linear-gradient(135deg, #0284c7, #38bdf8);
       display: flex; align-items: center; justify-content: center; color: #fff;
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
     }
-    .login-head h1 { margin: 0; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.3px; }
+    .login-head h1 { margin: 0; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.4px; }
     .login-head p { margin: 6px 0 0 0; font-size: 0.8rem; color: var(--muted); }
     .login-err {
       display: none; background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.35);
@@ -78,20 +82,20 @@
       background: none; border: none; color: var(--muted); font-size: 0.75rem; font-weight: 600; cursor: pointer; padding: 4px 6px;
     }
 
-    #appView { display: none; padding-bottom: 82px; }
+    #appView { display: none; padding-bottom: 96px; }
 
     header {
-      background: var(--header-bg); backdrop-filter: blur(12px);
+      background: var(--header-bg); backdrop-filter: blur(14px);
       padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
       border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000;
     }
     .brand { display: flex; align-items: center; gap: 10px; }
     .brand-icon {
-      width: 34px; height: 34px; border-radius: 10px;
+      width: 36px; height: 36px; border-radius: 11px;
       background: linear-gradient(135deg, #0284c7, #38bdf8);
       display: flex; align-items: center; justify-content: center; color: #fff;
     }
-    .brand h1 { font-size: 0.96rem; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
+    .brand h1 { font-size: 0.98rem; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
     .conn-badge { font-size: 0.7rem; margin-top: 2px; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 500; }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: #64748b; }
     .dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); }
@@ -100,98 +104,136 @@
     .header-actions { display: flex; align-items: center; gap: 8px; }
     .icon-btn {
       background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
-      width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+      width: 35px; height: 35px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
     }
     .btn {
       background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
-      padding: 7px 11px; border-radius: 8px; font-size: 0.76rem; font-weight: 600;
+      padding: 7px 11px; border-radius: 9px; font-size: 0.75rem; font-weight: 600;
       cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
     }
-    .btn.active { background: #0284c7; border-color: #38bdf8; color: #fff; }
-    .btn.primary { background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #fff; border: none; width: 100%; justify-content: center; padding: 12px; font-size: 0.88rem; margin-top: 6px; }
-    .btn.danger { background: rgba(239, 68, 68, 0.14); color: var(--red); border-color: rgba(239, 68, 68, 0.3); width: 100%; justify-content: center; padding: 11px; font-size: 0.85rem; }
+    .btn.active { background: var(--blue-strong); border-color: var(--blue); color: #fff; }
+    .btn.primary { background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #fff; border: none; width: 100%; justify-content: center; padding: 12px; font-size: 0.88rem; margin-top: 6px; border-radius: 11px; }
+    .btn.danger { background: rgba(239, 68, 68, 0.14); color: var(--red); border-color: rgba(239, 68, 68, 0.3); width: 100%; justify-content: center; padding: 11px; font-size: 0.85rem; border-radius: 11px; }
 
-    .container { max-width: 700px; margin: auto; padding: 14px; }
-    .tab-view { display: none; animation: fadeIn 0.2s ease; }
+    .container { max-width: 720px; margin: auto; padding: 14px; }
+    .tab-view { display: none; animation: fadeIn 0.22s ease; }
     .tab-view.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* Hero Vehicle Card */
+    .hero-card {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.16), rgba(16, 185, 129, 0.08));
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      border-radius: 16px; padding: 14px 16px; margin-bottom: 12px;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    }
+    .hero-title { font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .hero-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .signal-bars { display: flex; align-items: flex-end; gap: 3px; height: 16px; }
+    .signal-bars span { width: 3.5px; background: var(--green); border-radius: 2px; }
+    .signal-bars span:nth-child(1) { height: 5px; }
+    .signal-bars span:nth-child(2) { height: 9px; }
+    .signal-bars span:nth-child(3) { height: 13px; }
+    .signal-bars span:nth-child(4) { height: 16px; }
+    .signal-bars.off span { background: var(--muted); opacity: 0.35; }
+
+    /* Status Banner */
     .status {
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 11px 14px; border-radius: 10px; font-weight: 600; margin-bottom: 14px; font-size: 0.82rem;
+      padding: 11px 14px; border-radius: 12px; font-weight: 600; margin-bottom: 14px; font-size: 0.8rem;
     }
-    .normal { background: rgba(16, 185, 129, 0.13); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.28); }
+    .normal { background: rgba(16, 185, 129, 0.12); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.25); }
     .warn { background: rgba(245, 158, 11, 0.13); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.28); }
     .alert { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.4); animation: pulse 1.2s infinite; }
     @keyframes pulse { 50% { opacity: 0.65; } }
 
+    /* Telemetry Cards & Range Meters */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
     .card {
-      background: var(--surface); padding: 14px; border-radius: 14px; box-shadow: var(--shadow);
+      background: var(--surface); padding: 14px; border-radius: 16px; box-shadow: var(--shadow);
       border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;
     }
     .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .card h2 { margin: 0; font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
-    .card .val { font-size: 1.62rem; font-weight: 700; letter-spacing: -0.5px; color: var(--blue); }
+    .card h2 { margin: 0; font-size: 0.67rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; font-weight: 700; }
+    .card .val { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.6px; color: var(--blue); }
     .card .val.hum { color: var(--green); }
     .card .val.bat { color: var(--purple); }
     .card .val.dew { color: var(--amber); }
-    .card .sub { font-size: 0.71rem; color: var(--muted); margin-top: 6px; font-weight: 500; }
+    .card .sub { font-size: 0.7rem; color: var(--muted); margin-top: 6px; font-weight: 500; }
 
-    .bat-bar-bg { width: 100%; height: 5px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 8px; }
-    .bat-bar { height: 100%; width: 0%; background: var(--green); border-radius: 99px; transition: width 0.4s; }
+    .meter-track { width: 100%; height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 9px; position: relative; }
+    .meter-fill { height: 100%; width: 0%; background: var(--blue); border-radius: 99px; transition: width 0.45s ease, background 0.3s; }
 
-    .box { background: var(--surface); padding: 14px; border-radius: 14px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+    /* Boxes & Chart */
+    .box { background: var(--surface); padding: 15px; border-radius: 16px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
     .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
-    .box-header h3 { margin: 0; font-size: 0.88rem; font-weight: 600; color: var(--text); }
-    .seg-ctrl { display: inline-flex; background: var(--bg); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
+    .box-header h3 { margin: 0; font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .seg-ctrl { display: inline-flex; background: var(--bg); padding: 3px; border-radius: 9px; border: 1px solid var(--border); }
     .seg-btn {
-      background: transparent; border: none; color: var(--muted); font-size: 0.72rem; font-weight: 600;
-      padding: 5px 10px; border-radius: 6px; cursor: pointer;
+      background: transparent; border: none; color: var(--muted); font-size: 0.7rem; font-weight: 600;
+      padding: 5px 9px; border-radius: 7px; cursor: pointer; transition: 0.15s;
     }
-    .seg-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
-    .chart-wrap { position: relative; height: 210px; width: 100%; }
-    .time { text-align: center; color: var(--muted); font-size: 0.74rem; margin-bottom: 14px; font-weight: 500; }
+    .seg-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
 
-    #map { height: 340px; width: 100%; border-radius: 12px; border: 1px solid var(--border); z-index: 1; }
+    /* Time Filter Bar (1H, 24H, 7D, 1M, 1Y, All) */
+    .time-bar {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;
+      background: var(--bg); padding: 4px; border-radius: 10px; border: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+    .tf-btn {
+      background: transparent; border: none; color: var(--muted); font-size: 0.7rem; font-weight: 700;
+      padding: 6px 0; border-radius: 7px; cursor: pointer; transition: 0.15s;
+    }
+    .tf-btn.active { background: var(--blue-strong); color: #fff; }
+
+    .chart-wrap { position: relative; height: 225px; width: 100%; }
+    .time { text-align: center; color: var(--muted); font-size: 0.73rem; margin-bottom: 14px; font-weight: 500; }
+
+    /* Map */
+    #map { height: 350px; width: 100%; border-radius: 14px; border: 1px solid var(--border); z-index: 1; }
     .leaflet-control-attribution { display: none !important; }
     body:not([data-theme="light"]) .leaflet-tile-pane {
       filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
     }
-    .map-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; gap: 8px; }
+    .map-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.76rem; color: var(--muted); flex-wrap: wrap; gap: 8px; }
 
-    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-    th, td { padding: 10px 6px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { color: var(--muted); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; }
-    .pill { padding: 3px 8px; border-radius: 99px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    th, td { padding: 10px 5px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 700; font-size: 0.68rem; text-transform: uppercase; }
+    .pill { padding: 3px 8px; border-radius: 99px; font-size: 0.68rem; font-weight: 700; display: inline-block; }
     .pill.ok { background: rgba(16,185,129,0.15); color: var(--green); }
     .pill.hot { background: rgba(239,68,68,0.15); color: var(--red); }
     .pill.cold { background: rgba(56,189,248,0.15); color: var(--blue); }
     .pill.hum { background: rgba(245,158,11,0.15); color: var(--amber); }
 
+    /* Inputs */
     .field { margin-bottom: 12px; }
-    .field label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+    .field label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
     .field input {
-      width: 100%; padding: 11px 12px; border-radius: 9px; border: 1px solid var(--border);
+      width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border);
       background: var(--bg); color: var(--text); font-size: 0.88rem; outline: none;
     }
     .field input:focus { border-color: var(--blue); }
     .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
 
+    /* Floating Glass Bottom Navigation */
     .bottom-nav {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: var(--header-bg); backdrop-filter: blur(12px);
-      border-top: 1px solid var(--border);
+      position: fixed; bottom: 12px; left: 14px; right: 14px; max-width: 690px; margin: auto;
+      background: var(--header-bg); backdrop-filter: blur(16px);
+      border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow);
       display: grid; grid-template-columns: repeat(4, 1fr);
-      padding: 8px 0 10px 0; z-index: 1000;
+      padding: 8px 6px; z-index: 1000;
     }
     .nav-item {
-      background: none; border: none; color: var(--muted); font-size: 0.7rem; font-weight: 500;
+      background: none; border: none; color: var(--muted); font-size: 0.68rem; font-weight: 600;
       display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+      padding: 6px 0; border-radius: 12px; transition: 0.2s;
     }
-    .nav-item.active { color: var(--blue); font-weight: 600; }
-    .nav-item svg { width: 20px; height: 20px; stroke-width: 2; }
+    .nav-item.active { color: var(--blue); background: rgba(56, 189, 248, 0.1); }
+    .nav-item svg { width: 19px; height: 19px; stroke-width: 2.1; }
   </style>
 </head>
 <body>
@@ -201,10 +243,10 @@
     <div class="login-card">
       <div class="login-head">
         <div class="login-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
         </div>
         <h1>ColdChain Pro</h1>
-        <p>Sign in to access live fleet telemetry</p>
+        <p>Enterprise Cold-Chain Telemetry & Fleet Monitor</p>
       </div>
 
       <div id="loginErr" class="login-err"></div>
@@ -231,7 +273,7 @@
     <header>
       <div class="brand">
         <div class="brand-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
         </div>
         <div>
           <h1>ColdChain Pro</h1>
@@ -251,45 +293,64 @@
     </header>
 
     <div class="container">
+      <!-- TAB 1: LIVE -->
       <section id="tab-live" class="tab-view active">
+        <div class="hero-card">
+          <div>
+            <div class="hero-title">
+              <span>Truck 01 • Reefer Unit</span>
+              <span class="pill ok" id="unitModeBadge">Active</span>
+            </div>
+            <div class="hero-sub" id="heroSubTxt">ESP32 + SHT31 + DS3231 • Micro-ROS Telemetry</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="signal-bars off" id="signalBars">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <div style="font-size:0.65rem; color:var(--muted); margin-top:4px; font-weight:600;" id="recordCountLbl">0 logs</div>
+          </div>
+        </div>
+
         <div id="statusBox" class="status normal">Connecting to Firebase...</div>
 
         <div class="grid-2">
           <div class="card">
             <div class="card-top">
               <h2>Temperature</h2>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
             </div>
             <div id="tempVal" class="val">-- °C</div>
+            <div class="meter-track"><div id="tempMeter" class="meter-fill"></div></div>
             <div id="tempRangeTxt" class="sub">Safe: 2°C – 8°C</div>
           </div>
 
           <div class="card">
             <div class="card-top">
               <h2>Humidity</h2>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
             </div>
             <div id="humVal" class="val hum">-- %</div>
+            <div class="meter-track"><div id="humMeter" class="meter-fill" style="background:var(--green);"></div></div>
             <div id="humRangeTxt" class="sub">Limit: &lt; 75%</div>
           </div>
 
           <div class="card">
             <div class="card-top">
               <h2>Battery</h2>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg>
             </div>
             <div id="batVal" class="val bat">-- %</div>
+            <div class="meter-track"><div id="batBar" class="meter-fill" style="background:var(--purple);"></div></div>
             <div id="batSub" class="sub">Awaiting ESP32 ADC</div>
-            <div class="bat-bar-bg"><div id="batBar" class="bat-bar"></div></div>
           </div>
 
           <div class="card">
             <div class="card-top">
               <h2>Dew Point</h2>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
             </div>
             <div id="dewVal" class="val dew">-- °C</div>
-            <div id="dewSub" class="sub">Condensation Risk</div>
+            <div id="dewSub" class="sub" style="margin-top:16px;">Condensation Risk</div>
           </div>
         </div>
 
@@ -300,15 +361,28 @@
             <h3>Telemetry Trend</h3>
             <div class="seg-ctrl">
               <button class="seg-btn active" data-metric="temp">Temp</button>
-              <button class="seg-btn" data-metric="hum">Humidity</button>
+              <button class="seg-btn" data-metric="hum">Hum</button>
+              <button class="seg-btn" data-metric="both">Both</button>
             </div>
           </div>
+
+          <!-- Long-Term Time Range Selector -->
+          <div class="time-bar" id="liveTimeBar">
+            <button class="tf-btn" data-range="1h">1H</button>
+            <button class="tf-btn" data-range="24h">24H</button>
+            <button class="tf-btn" data-range="7d">7D</button>
+            <button class="tf-btn" data-range="1m">1M</button>
+            <button class="tf-btn" data-range="1y">1Y</button>
+            <button class="tf-btn active" data-range="all">All</button>
+          </div>
+
           <div class="chart-wrap">
             <canvas id="tempChart"></canvas>
           </div>
         </div>
       </section>
 
+      <!-- TAB 2: LIVE MAP -->
       <section id="tab-map" class="tab-view">
         <div class="box">
           <div class="box-header">
@@ -323,7 +397,17 @@
         </div>
       </section>
 
+      <!-- TAB 3: ANALYTICS -->
       <section id="tab-logs" class="tab-view">
+        <div class="time-bar" id="analyticsTimeBar">
+          <button class="tf-btn" data-range="1h">1H</button>
+          <button class="tf-btn" data-range="24h">24H</button>
+          <button class="tf-btn" data-range="7d">7D</button>
+          <button class="tf-btn" data-range="1m">1M</button>
+          <button class="tf-btn" data-range="1y">1Y</button>
+          <button class="tf-btn active" data-range="all">All</button>
+        </div>
+
         <div class="grid-3">
           <div class="card"><h2>Min</h2><div id="statMin" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
           <div class="card"><h2>Avg</h2><div id="statAvg" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
@@ -334,30 +418,31 @@
           <div class="card">
             <h2>Compliance</h2>
             <div id="statComp" class="val hum" style="font-size:1.5rem; margin-top:4px;">-- %</div>
-            <div class="sub">Safe range rate</div>
+            <div class="sub" id="statSampleSub">Selected period</div>
           </div>
           <div class="card">
             <h2>Breaches</h2>
             <div id="statBreach" class="val" style="font-size:1.5rem; color:var(--red); margin-top:4px;">0</div>
-            <div class="sub">Last 50 logs</div>
+            <div class="sub">Out-of-range events</div>
           </div>
         </div>
 
         <div class="box">
           <div class="box-header">
-            <h3>Recent Logs</h3>
+            <h3>Historical Logs</h3>
             <div style="display:flex; gap:6px;">
               <button id="filterBreachBtn" class="btn">Breaches</button>
               <button id="csvBtn" class="btn">Export CSV</button>
             </div>
           </div>
           <table>
-            <thead><tr><th>Time</th><th>Temp</th><th>Hum</th><th>Status</th></tr></thead>
+            <thead><tr><th>Date & Time</th><th>Temp</th><th>Hum</th><th>Status</th></tr></thead>
             <tbody id="logTable"></tbody>
           </table>
         </div>
       </section>
 
+      <!-- TAB 4: SETTINGS -->
       <section id="tab-settings" class="tab-view">
         <div class="box">
           <div class="box-header"><h3>Alert Thresholds</h3></div>
@@ -384,6 +469,7 @@
       </section>
     </div>
 
+    <!-- FLOATING GLASS NAV -->
     <nav class="bottom-nav">
       <button class="nav-item active" data-tab="tab-live">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -404,7 +490,7 @@
     </nav>
   </div>
 
-  <!-- Instant Session Router (Prevents login flash on refresh; clears on app close) -->
+  <!-- Instant Session Router -->
   <script>
     (function() {
       if (localStorage.getItem('cc_theme') === 'light') {
@@ -442,7 +528,6 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    // Session Persistence: Survives page refresh, but requires login again when app is closed from Recent Apps
     const auth = initializeAuth(app, { persistence: browserSessionPersistence });
     const db = getDatabase(app);
 
@@ -456,7 +541,7 @@
       if (isLight) document.body.setAttribute('data-theme', 'light');
       else document.body.removeAttribute('data-theme');
       localStorage.setItem('cc_theme', theme);
-      document.getElementById('themeColorMeta').setAttribute('content', isLight ? '#f1f5f9' : '#090d16');
+      document.getElementById('themeColorMeta').setAttribute('content', isLight ? '#f1f5f9' : '#070b14');
       document.getElementById('themeIcon').innerHTML = isLight ? moonSVG : sunSVG;
       if (chart) {
         chart.options.scales.y.grid.color = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.05)';
@@ -546,7 +631,7 @@
       loadSettingsUI();
       document.getElementById('saveMsg').innerText = "Settings saved successfully";
       setTimeout(() => document.getElementById('saveMsg').innerText = "", 2000);
-      if (currentEntries.length) renderAll(currentEntries);
+      if (allEntries.length) renderAll(allEntries);
     });
 
     // Map Setup
@@ -591,35 +676,92 @@
       });
     });
 
-    // Chart Setup
+    // Time Filtering Logic (1H, 24H, 7D, 1M, 1Y, All)
+    let activeRange = 'all';
+    const rangeMsMap = {
+      '1h': 3600 * 1000,
+      '24h': 24 * 3600 * 1000,
+      '7d': 7 * 24 * 3600 * 1000,
+      '1m': 30 * 24 * 3600 * 1000,
+      '1y': 365 * 24 * 3600 * 1000,
+      'all': Infinity
+    };
+
+    function filterByRange(entries, rangeKey) {
+      if (!entries.length || rangeKey === 'all') return entries;
+      const cutoff = Date.now() - (rangeMsMap[rangeKey] || Infinity);
+      const filtered = entries.filter(e => {
+        if (!e.timestamp) return false;
+        const t = new Date(e.timestamp.replace(' ', 'T')).getTime();
+        return !isNaN(t) && t >= cutoff;
+      });
+      return filtered.length ? filtered : entries.slice(-20);
+    }
+
+    function syncTimeButtons(rangeKey) {
+      activeRange = rangeKey;
+      document.querySelectorAll('.tf-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.range === rangeKey);
+      });
+      if (allEntries.length) renderFilteredViews();
+    }
+
+    document.querySelectorAll('.tf-btn').forEach(btn => {
+      btn.addEventListener('click', () => syncTimeButtons(btn.dataset.range));
+    });
+
+    // Chart Setup with Safe-Zone Reference Lines & Dual Axis
     let activeMetric = 'temp', blueGrad = null, greenGrad = null;
+    const thresholdPlugin = {
+      id: 'thresholdLines',
+      afterDatasetsDraw(c) {
+        if (activeMetric === 'hum') return;
+        const { ctx, chartArea: { left, right }, scales: { y } } = c;
+        if (!y) return;
+        const drawLine = (val, color, label) => {
+          const yPos = y.getPixelForValue(val);
+          if (yPos < c.chartArea.top || yPos > c.chartArea.bottom) return;
+          ctx.save();
+          ctx.beginPath();
+          ctx.setLineDash([4, 4]);
+          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = color;
+          ctx.moveTo(left, yPos);
+          ctx.lineTo(right, yPos);
+          ctx.stroke();
+          ctx.fillStyle = color;
+          ctx.font = '600 9px Inter, sans-serif';
+          ctx.fillText(label, right - 44, yPos - 4);
+          ctx.restore();
+        };
+        drawLine(config.maxTemp, 'rgba(239, 68, 68, 0.75)', `Max ${config.maxTemp}°`);
+        drawLine(config.minTemp, 'rgba(56, 189, 248, 0.75)', `Min ${config.minTemp}°`);
+      }
+    };
+
     try {
       if (window.Chart) {
         const ctx = document.getElementById('tempChart').getContext('2d');
-        blueGrad = ctx.createLinearGradient(0, 0, 0, 200);
+        blueGrad = ctx.createLinearGradient(0, 0, 0, 220);
         blueGrad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
         blueGrad.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
 
-        greenGrad = ctx.createLinearGradient(0, 0, 0, 200);
-        greenGrad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+        greenGrad = ctx.createLinearGradient(0, 0, 0, 220);
+        greenGrad.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
         greenGrad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
 
         chart = new Chart(ctx, {
           type: 'line',
-          data: {
-            labels: [],
-            datasets: [{
-              data: [], borderColor: '#38bdf8', backgroundColor: blueGrad,
-              borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.4, fill: true
-            }]
-          },
+          data: { labels: [], datasets: [] },
+          plugins: [thresholdPlugin],
           options: {
             responsive: true, maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
             plugins: { legend: { display: false } },
             scales: {
               x: { grid: { display: false }, ticks: { color: '#64748b', maxTicksLimit: 5, font: { size: 10 } } },
-              y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4, 4] }, ticks: { color: '#64748b', font: { size: 10 } } }
+              y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4, 4] }, ticks: { color: '#64748b', font: { size: 10 } } },
+              y1: { display: false, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#10b981', font: { size: 10 } } }
             }
           }
         });
@@ -631,26 +773,56 @@
         document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         activeMetric = btn.dataset.metric;
-        updateChart(currentEntries);
+        updateChart(filterByRange(allEntries, activeRange));
       });
     });
 
+    function formatChartLabel(ts) {
+      if (!ts) return '';
+      const parts = ts.split(' ');
+      if (activeRange === '1h' || activeRange === '24h') return (parts[1] || ts).slice(0, 5);
+      return (parts[0] || ts).slice(5); // MM-DD for 7D, 1M, 1Y, All
+    }
+
     function updateChart(entries) {
       if (!chart || !entries.length) return;
-      const recent = entries.slice(-20);
-      chart.data.labels = recent.map(e => (e.timestamp.split(' ')[1] || e.timestamp).slice(0, 8));
-      const ds = chart.data.datasets[0];
+      // Downsample if huge dataset (e.g., 1M or 1Y) so chart stays smooth
+      const step = Math.max(1, Math.floor(entries.length / 60));
+      const sampled = entries.filter((_, idx) => idx % step === 0);
+
+      chart.data.labels = sampled.map(e => formatChartLabel(e.timestamp));
+      chart.options.scales.y1.display = (activeMetric === 'both');
+
       if (activeMetric === 'temp') {
-        ds.label = 'Temp (°C)'; ds.data = recent.map(e => e.temperature);
-        ds.borderColor = '#38bdf8'; ds.backgroundColor = blueGrad;
+        chart.data.datasets = [{
+          label: 'Temp (°C)', data: sampled.map(e => e.temperature),
+          borderColor: '#38bdf8', backgroundColor: blueGrad,
+          borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.35, fill: true, yAxisID: 'y'
+        }];
+      } else if (activeMetric === 'hum') {
+        chart.data.datasets = [{
+          label: 'Humidity (%)', data: sampled.map(e => e.humidity),
+          borderColor: '#10b981', backgroundColor: greenGrad,
+          borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.35, fill: true, yAxisID: 'y'
+        }];
       } else {
-        ds.label = 'Humidity (%)'; ds.data = recent.map(e => e.humidity);
-        ds.borderColor = '#10b981'; ds.backgroundColor = greenGrad;
+        chart.data.datasets = [
+          {
+            label: 'Temp (°C)', data: sampled.map(e => e.temperature),
+            borderColor: '#38bdf8', backgroundColor: blueGrad,
+            borderWidth: 2.2, pointRadius: 0, tension: 0.35, fill: true, yAxisID: 'y'
+          },
+          {
+            label: 'Humidity (%)', data: sampled.map(e => e.humidity),
+            borderColor: '#10b981', backgroundColor: 'transparent',
+            borderWidth: 2, borderDash: [4, 3], pointRadius: 0, tension: 0.35, fill: false, yAxisID: 'y1'
+          }
+        ];
       }
       chart.update();
     }
 
-    let soundEnabled = false, onlyBreaches = false, lastAlertTime = "", lastDataTimestamp = null, currentEntries = [];
+    let soundEnabled = false, onlyBreaches = false, lastAlertTime = "", lastDataTimestamp = null, allEntries = [];
     function playBeep() {
       const a = new (window.AudioContext || window.webkitAudioContext)();
       const o = a.createOscillator();
@@ -670,28 +842,33 @@
     filterBreachBtn.addEventListener('click', () => {
       onlyBreaches = !onlyBreaches;
       filterBreachBtn.classList.toggle('active', onlyBreaches);
-      renderTable(currentEntries);
+      renderFilteredViews();
     });
 
     document.getElementById('csvBtn').addEventListener('click', () => {
-      if (!currentEntries.length) return;
+      const subset = filterByRange(allEntries, activeRange);
+      if (!subset.length) return;
       let csv = "Timestamp,Temperature (C),Humidity (%),Battery (%),Lat,Lng\n";
-      currentEntries.forEach(e => csv += `${e.timestamp},${e.temperature},${e.humidity},${e.battery ?? ''},${e.lat ?? ''},${e.lng ?? ''}\n`);
+      subset.forEach(e => csv += `${e.timestamp},${e.temperature},${e.humidity},${e.battery ?? ''},${e.lat ?? ''},${e.lng ?? ''}\n`);
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-      a.download = "coldchain_truck01_logs.csv";
+      a.download = `coldchain_truck01_${activeRange}.csv`;
       a.click();
     });
 
     function checkOnlineStatus() {
       const dot = document.getElementById('connDot');
       const txt = document.getElementById('connText');
+      const bars = document.getElementById('signalBars');
+      const badge = document.getElementById('unitModeBadge');
       if (!lastDataTimestamp) return;
       const diffSec = (Date.now() - new Date(lastDataTimestamp.replace(' ', 'T')).getTime()) / 1000;
       if (!isNaN(diffSec) && diffSec < 25) {
         dot.className = "dot online"; txt.innerText = "Truck 01 • Online";
+        bars.classList.remove('off'); badge.className = "pill ok"; badge.innerText = "Live Stream";
       } else {
         dot.className = "dot offline"; txt.innerText = "Truck 01 • Offline";
+        bars.classList.add('off'); badge.className = "pill hum"; badge.innerText = "Standby";
       }
     }
     setInterval(checkOnlineStatus, 5000);
@@ -705,11 +882,28 @@
     function renderTable(entries) {
       let list = entries.slice().reverse();
       if (onlyBreaches) list = list.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp || e.humidity > config.maxHum);
-      document.getElementById('logTable').innerHTML = list.slice(0, 20).map(e => {
+      document.getElementById('logTable').innerHTML = list.slice(0, 40).map(e => {
         const isHot = e.temperature > config.maxTemp, isCold = e.temperature < config.minTemp;
         const badge = isHot ? '<span class="pill hot">High</span>' : isCold ? '<span class="pill cold">Freeze</span>' : e.humidity > config.maxHum ? '<span class="pill hum">Hum</span>' : '<span class="pill ok">Safe</span>';
-        return `<tr><td>${(e.timestamp.split(' ')[1] || e.timestamp).slice(0,8)}</td><td>${e.temperature}°C</td><td>${e.humidity}%</td><td>${badge}</td></tr>`;
-      }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted);">No records</td></tr>';
+        return `<tr><td style="font-size:0.72rem;color:var(--muted);">${e.timestamp}</td><td><strong>${e.temperature}°C</strong></td><td>${e.humidity}%</td><td>${badge}</td></tr>`;
+      }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted);">No records in this range</td></tr>';
+    }
+
+    function renderFilteredViews() {
+      const subset = filterByRange(allEntries, activeRange);
+      if (!subset.length) return;
+
+      const temps = subset.map(e => e.temperature);
+      const breaches = subset.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp).length;
+      document.getElementById('statMin').innerText = `${Math.min(...temps).toFixed(1)}°C`;
+      document.getElementById('statAvg').innerText = `${(temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1)}°C`;
+      document.getElementById('statMax').innerText = `${Math.max(...temps).toFixed(1)}°C`;
+      document.getElementById('statBreach').innerText = breaches;
+      document.getElementById('statComp').innerText = `${(((subset.length - breaches) / subset.length) * 100).toFixed(0)}%`;
+      document.getElementById('statSampleSub').innerText = `${subset.length} readings (${activeRange.toUpperCase()})`;
+
+      updateChart(subset);
+      renderTable(subset);
     }
 
     function renderAll(entries) {
@@ -717,13 +911,25 @@
       lastDataTimestamp = latest.timestamp;
       checkOnlineStatus();
 
+      document.getElementById('recordCountLbl').innerText = `${entries.length} logs`;
       document.getElementById('tempVal').innerText = `${latest.temperature} °C`;
       document.getElementById('humVal').innerText = `${latest.humidity} %`;
-      document.getElementById('lastUpdate').innerText = `Updated: ${latest.timestamp}`;
+      document.getElementById('lastUpdate').innerText = `Last Telemetry: ${latest.timestamp}`;
+
+      // Live Range Meters
+      const tempPct = Math.max(5, Math.min(100, ((latest.temperature + 10) / 45) * 100));
+      const tempMeter = document.getElementById('tempMeter');
+      tempMeter.style.width = `${tempPct}%`;
+      tempMeter.style.background = latest.temperature > config.maxTemp ? '#ef4444' : latest.temperature < config.minTemp ? '#38bdf8' : '#10b981';
+
+      const humPct = Math.max(5, Math.min(100, latest.humidity));
+      const humMeter = document.getElementById('humMeter');
+      humMeter.style.width = `${humPct}%`;
+      humMeter.style.background = latest.humidity > config.maxHum ? '#f59e0b' : '#10b981';
 
       const dp = calcDewPoint(latest.temperature, latest.humidity);
       document.getElementById('dewVal').innerText = `${dp} °C`;
-      document.getElementById('dewSub').innerText = (latest.temperature - dp < 2) ? "Moisture Risk" : "Dry & Safe";
+      document.getElementById('dewSub').innerText = (latest.temperature - dp < 2) ? "Condensation Risk" : "Dry & Safe";
 
       const batVal = document.getElementById('batVal'), batSub = document.getElementById('batSub'), batBar = document.getElementById('batBar');
       if (typeof latest.battery === 'number') {
@@ -757,16 +963,7 @@
         lastAlertTime = latest.timestamp;
       }
 
-      const temps = entries.map(e => e.temperature);
-      const breaches = entries.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp).length;
-      document.getElementById('statMin').innerText = `${Math.min(...temps).toFixed(1)}°C`;
-      document.getElementById('statAvg').innerText = `${(temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1)}°C`;
-      document.getElementById('statMax').innerText = `${Math.max(...temps).toFixed(1)}°C`;
-      document.getElementById('statBreach').innerText = breaches;
-      document.getElementById('statComp').innerText = `${(((entries.length - breaches) / entries.length) * 100).toFixed(0)}%`;
-
-      updateChart(entries);
-      renderTable(entries);
+      renderFilteredViews();
     }
 
     let unsubscribeDb = null;
@@ -780,11 +977,12 @@
         if (map) setTimeout(() => map.invalidateSize(), 200);
 
         if (!unsubscribeDb) {
-          unsubscribeDb = onValue(query(ref(db, 'logistics/truck_01'), limitToLast(50)), (snap) => {
+          // Fetch up to 2000 historical logs to support 1H, 24H, 7D, 1M, 1Y views
+          unsubscribeDb = onValue(query(ref(db, 'logistics/truck_01'), limitToLast(2000)), (snap) => {
             const data = snap.val();
             if (!data) return;
-            currentEntries = Object.values(data);
-            renderAll(currentEntries);
+            allEntries = Object.values(data);
+            renderAll(allEntries);
           });
         }
       } else {
