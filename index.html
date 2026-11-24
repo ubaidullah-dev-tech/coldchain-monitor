@@ -5,93 +5,211 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ColdChain Pro</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#090d16">
   <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <!-- Professional Font (Overrides Phone Font) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js & Leaflet Map -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <style>
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 0 0 78px 0; }
-    header { background: #1e293b; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 20; }
-    .brand { display: flex; flex-direction: column; }
-    .brand h1 { font-size: 1.05rem; margin: 0; }
-    .conn-badge { font-size: 0.72rem; margin-top: 3px; display: inline-flex; align-items: center; gap: 5px; color: #94a3b8; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #64748b; display: inline-block; }
-    .dot.online { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-    .dot.offline { background: #ef4444; }
-    .btn { background: #334155; color: #f8fafc; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
-    .btn.active { background: #0284c7; }
-    .btn.primary { background: #0284c7; width: 100%; padding: 12px; font-size: 0.9rem; margin-top: 10px; }
+    :root {
+      --bg: #090d16;
+      --surface: #111827;
+      --surface-2: #1a2335;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --blue: #38bdf8;
+      --green: #10b981;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --purple: #a78bfa;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif !important; }
+    body { background: var(--bg); color: var(--text); margin: 0; padding: 0 0 82px 0; -webkit-font-smoothing: antialiased; }
+
+    /* Header */
+    header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      display: flex; align-items: center; justify-content: center; color: #fff;
+    }
+    .brand h1 { font-size: 0.98rem; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
+    .conn-badge { font-size: 0.72rem; margin-top: 2px; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 500; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #64748b; }
+    .dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .dot.offline { background: var(--red); }
+
+    .btn {
+      background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
+      padding: 7px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
+    }
+    .btn.active { background: #0284c7; border-color: #38bdf8; color: #fff; }
+    .btn.primary { background: linear-gradient(135deg, #0284c7, #0ea5e9); border: none; width: 100%; justify-content: center; padding: 12px; font-size: 0.88rem; margin-top: 8px; }
+
     .container { max-width: 700px; margin: auto; padding: 14px; }
-    .tab-view { display: none; }
+    .tab-view { display: none; animation: fadeIn 0.2s ease; }
     .tab-view.active { display: block; }
-    .status { text-align: center; padding: 12px; border-radius: 10px; font-weight: 700; margin-bottom: 14px; font-size: 0.9rem; }
-    .normal { background: #14532d; color: #86efac; border: 1px solid #166534; }
-    .warn { background: #713f12; color: #fde047; border: 1px solid #854d0e; }
-    .alert { background: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; animation: blink 1s infinite; }
-    @keyframes blink { 50% { opacity: 0.6; } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Status Banner */
+    .status {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 11px 14px; border-radius: 10px; font-weight: 600; margin-bottom: 14px; font-size: 0.84rem;
+    }
+    .normal { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.28); }
+    .warn { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.28); }
+    .alert { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); animation: pulse 1.2s infinite; }
+    @keyframes pulse { 50% { opacity: 0.65; } }
+
+    /* Cards */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-    .card { background: #1e293b; padding: 14px 12px; border-radius: 12px; text-align: center; border: 1px solid #334155; }
-    .card h2 { margin: 0; font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-    .card .val { font-size: 1.75rem; font-weight: 700; margin-top: 6px; color: #38bdf8; }
-    .card .val.hum { color: #34d399; }
-    .card .val.bat { color: #a78bfa; }
-    .card .val.dew { color: #fbbf24; }
-    .card .sub { font-size: 0.72rem; color: #94a3b8; margin-top: 4px; }
-    .bat-bar-bg { width: 100%; height: 6px; background: #334155; border-radius: 4px; overflow: hidden; margin-top: 8px; }
-    .bat-bar { height: 100%; width: 0%; background: #22c55e; transition: width 0.4s; }
-    .box { background: #1e293b; padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1px solid #334155; }
-    .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
-    .box-header h3 { margin: 0; font-size: 0.92rem; color: #e2e8f0; }
-    .time { text-align: center; color: #94a3b8; font-size: 0.78rem; margin-bottom: 14px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-    th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid #334155; }
-    th { color: #94a3b8; font-weight: 600; }
-    .hot { color: #f87171; font-weight: 700; }
-    .cold { color: #60a5fa; font-weight: 700; }
-    .field { margin-bottom: 14px; }
-    .field label { display: block; font-size: 0.82rem; color: #cbd5e1; margin-bottom: 6px; }
-    .field input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #f8fafc; font-size: 0.95rem; }
-    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #334155; font-size: 0.88rem; }
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; border-top: 1px solid #334155; display: flex; justify-content: space-around; padding: 8px 0 10px 0; z-index: 30; }
-    .nav-item { background: none; border: none; color: #94a3b8; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 16px; }
-    .nav-item span.ico { font-size: 1.2rem; }
-    .nav-item.active { color: #38bdf8; font-weight: 700; }
+    .card {
+      background: var(--surface); padding: 14px; border-radius: 14px;
+      border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .card h2 { margin: 0; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
+    .card .val { font-size: 1.65rem; font-weight: 700; letter-spacing: -0.5px; color: var(--blue); }
+    .card .val.hum { color: var(--green); }
+    .card .val.bat { color: var(--purple); }
+    .card .val.dew { color: var(--amber); }
+    .card .sub { font-size: 0.72rem; color: var(--muted); margin-top: 6px; font-weight: 500; }
+
+    .bat-bar-bg { width: 100%; height: 5px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+    .bat-bar { height: 100%; width: 0%; background: var(--green); border-radius: 99px; transition: width 0.4s; }
+
+    /* Boxes & Chart */
+    .box { background: var(--surface); padding: 14px; border-radius: 14px; margin-bottom: 14px; border: 1px solid var(--border); }
+    .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
+    .box-header h3 { margin: 0; font-size: 0.88rem; font-weight: 600; color: var(--text); }
+    .seg-ctrl { display: inline-flex; background: var(--bg); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
+    .seg-btn {
+      background: transparent; border: none; color: var(--muted); font-size: 0.72rem; font-weight: 600;
+      padding: 5px 10px; border-radius: 6px; cursor: pointer;
+    }
+    .seg-btn.active { background: var(--surface-2); color: var(--text); }
+    .chart-wrap { position: relative; height: 210px; width: 100%; }
+    .time { text-align: center; color: var(--muted); font-size: 0.75rem; margin-bottom: 14px; font-weight: 500; }
+
+    /* Map */
+    #map { height: 340px; width: 100%; border-radius: 12px; border: 1px solid var(--border); z-index: 1; }
+    .map-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; gap: 8px; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th, td { padding: 10px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; }
+    .pill { padding: 3px 8px; border-radius: 99px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
+    .pill.ok { background: rgba(16,185,129,0.15); color: #34d399; }
+    .pill.hot { background: rgba(239,68,68,0.15); color: #f87171; }
+    .pill.cold { background: rgba(56,189,248,0.15); color: #38bdf8; }
+    .pill.hum { background: rgba(245,158,11,0.15); color: #fbbf24; }
+
+    /* Settings */
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+    .field input {
+      width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-size: 0.9rem; outline: none;
+    }
+    .field input:focus { border-color: var(--blue); }
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(17, 24, 39, 0.94); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      padding: 8px 0 10px 0; z-index: 1000;
+    }
+    .nav-item {
+      background: none; border: none; color: var(--muted); font-size: 0.7rem; font-weight: 500;
+      display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+    }
+    .nav-item.active { color: var(--blue); font-weight: 600; }
+    .nav-item svg { width: 20px; height: 20px; stroke-width: 2; }
   </style>
 </head>
 <body>
   <header>
     <div class="brand">
-      <h1>❄️ ColdChain Pro — Truck 01</h1>
-      <div class="conn-badge"><span id="connDot" class="dot"></span><span id="connText">Connecting...</span></div>
+      <div class="brand-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+      </div>
+      <div>
+        <h1>ColdChain Pro</h1>
+        <div class="conn-badge"><span id="connDot" class="dot"></span><span id="connText">Connecting...</span></div>
+      </div>
     </div>
-    <button id="soundBtn" class="btn">🔇 Muted</button>
+    <button id="soundBtn" class="btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+      <span>Muted</span>
+    </button>
   </header>
 
   <div class="container">
-    <!-- TAB 1: LIVE MONITOR -->
+    <!-- TAB 1: LIVE -->
     <section id="tab-live" class="tab-view active">
       <div id="statusBox" class="status normal">Connecting to Firebase...</div>
 
       <div class="grid-2">
         <div class="card">
-          <h2>Temperature</h2>
+          <div class="card-top">
+            <h2>Temperature</h2>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+          </div>
           <div id="tempVal" class="val">-- °C</div>
           <div id="tempRangeTxt" class="sub">Safe: 2°C – 8°C</div>
         </div>
+
         <div class="card">
-          <h2>Humidity</h2>
+          <div class="card-top">
+            <h2>Humidity</h2>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          </div>
           <div id="humVal" class="val hum">-- %</div>
           <div id="humRangeTxt" class="sub">Limit: &lt; 75%</div>
         </div>
+
         <div class="card">
-          <h2>Battery Health</h2>
+          <div class="card-top">
+            <h2>Battery</h2>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg>
+          </div>
           <div id="batVal" class="val bat">-- %</div>
           <div id="batSub" class="sub">Awaiting ESP32 ADC</div>
           <div class="bat-bar-bg"><div id="batBar" class="bat-bar"></div></div>
         </div>
+
         <div class="card">
-          <h2>Dew Point</h2>
+          <div class="card-top">
+            <h2>Dew Point</h2>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
+          </div>
           <div id="dewVal" class="val dew">-- °C</div>
           <div id="dewSub" class="sub">Condensation Risk</div>
         </div>
@@ -101,127 +219,131 @@
 
       <div class="box">
         <div class="box-header">
-          <h3>Live Temp & Humidity Trend</h3>
+          <h3>Telemetry Trend</h3>
+          <div class="seg-ctrl">
+            <button class="seg-btn active" data-metric="temp">Temp</button>
+            <button class="seg-btn" data-metric="hum">Humidity</button>
+          </div>
         </div>
-        <canvas id="tempChart"></canvas>
+        <div class="chart-wrap">
+          <canvas id="tempChart"></canvas>
+        </div>
       </div>
     </section>
 
-    <!-- TAB 2: ANALYTICS & LOGS -->
+    <!-- TAB 2: LIVE MAP -->
+    <section id="tab-map" class="tab-view">
+      <div class="box">
+        <div class="box-header">
+          <h3>Truck 01 — Live GPS</h3>
+          <button id="phoneGpsBtn" class="btn">Use Phone GPS</button>
+        </div>
+        <div id="map"></div>
+        <div class="map-meta">
+          <span id="gpsCoords">Lat: 31.3916, Lng: 74.2414</span>
+          <span id="gpsSource" class="pill cold">Default (Lahore)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: ANALYTICS -->
     <section id="tab-logs" class="tab-view">
       <div class="grid-3">
-        <div class="card">
-          <h2>Min Temp</h2>
-          <div id="statMin" class="val" style="font-size:1.3rem;">--</div>
-        </div>
-        <div class="card">
-          <h2>Avg Temp</h2>
-          <div id="statAvg" class="val" style="font-size:1.3rem;">--</div>
-        </div>
-        <div class="card">
-          <h2>Max Temp</h2>
-          <div id="statMax" class="val" style="font-size:1.3rem;">--</div>
-        </div>
+        <div class="card"><h2>Min</h2><div id="statMin" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
+        <div class="card"><h2>Avg</h2><div id="statAvg" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
+        <div class="card"><h2>Max</h2><div id="statMax" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
       </div>
 
       <div class="grid-2">
         <div class="card">
-          <h2>Compliance Score</h2>
-          <div id="statComp" class="val hum" style="font-size:1.5rem;">-- %</div>
-          <div class="sub">Within safe range</div>
+          <h2>Compliance</h2>
+          <div id="statComp" class="val hum" style="font-size:1.5rem; margin-top:4px;">-- %</div>
+          <div class="sub">Safe range rate</div>
         </div>
         <div class="card">
-          <h2>Total Breaches</h2>
-          <div id="statBreach" class="val" style="font-size:1.5rem; color:#f87171;">0</div>
-          <div class="sub">In last 50 readings</div>
+          <h2>Breaches</h2>
+          <div id="statBreach" class="val" style="font-size:1.5rem; color:#f87171; margin-top:4px;">0</div>
+          <div class="sub">Last 50 logs</div>
         </div>
       </div>
 
       <div class="box">
         <div class="box-header">
-          <h3>Sensor Logs</h3>
-          <div>
-            <button id="filterBreachBtn" class="btn">⚠️ Breaches Only</button>
-            <button id="csvBtn" class="btn">⬇️ CSV</button>
+          <h3>Recent Logs</h3>
+          <div style="display:flex; gap:6px;">
+            <button id="filterBreachBtn" class="btn">Breaches</button>
+            <button id="csvBtn" class="btn">Export CSV</button>
           </div>
         </div>
         <table>
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Temp</th>
-              <th>Hum</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Time</th><th>Temp</th><th>Hum</th><th>Status</th></tr></thead>
           <tbody id="logTable"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- TAB 3: SETTINGS -->
+    <!-- TAB 4: SETTINGS -->
     <section id="tab-settings" class="tab-view">
       <div class="box">
         <div class="box-header"><h3>Alert Thresholds</h3></div>
-        <div class="field">
-          <label>Min Safe Temp (°C) — Freezing Alert</label>
-          <input type="number" step="0.5" id="inpMinTemp">
-        </div>
-        <div class="field">
-          <label>Max Safe Temp (°C) — Overheat Alert</label>
-          <input type="number" step="0.5" id="inpMaxTemp">
-        </div>
-        <div class="field">
-          <label>Max Safe Humidity (%)</label>
-          <input type="number" step="1" id="inpMaxHum">
-        </div>
+        <div class="field"><label>Min Safe Temp (°C)</label><input type="number" step="0.5" id="inpMinTemp"></div>
+        <div class="field"><label>Max Safe Temp (°C)</label><input type="number" step="0.5" id="inpMaxTemp"></div>
+        <div class="field"><label>Max Safe Humidity (%)</label><input type="number" step="1" id="inpMaxHum"></div>
         <div class="toggle-row">
-          <span>Mobile Vibration on Alert</span>
-          <input type="checkbox" id="inpVibe" style="width:20px; height:20px;">
+          <span>Vibrate on Alert</span>
+          <input type="checkbox" id="inpVibe" style="width:18px; height:18px;">
         </div>
-        <button id="saveSettingsBtn" class="btn primary">💾 Save Settings</button>
-        <div id="saveMsg" class="time" style="margin-top:8px; color:#86efac;"></div>
+        <button id="saveSettingsBtn" class="btn primary">Save Thresholds</button>
+        <div id="saveMsg" class="time" style="margin:8px 0 0 0; color:#34d399;"></div>
       </div>
 
       <div class="box">
-        <div class="box-header"><h3>System Info</h3></div>
-        <p style="font-size:0.82rem; color:#94a3b8; margin:0; line-height:1.6;">
-          <strong>Node:</strong> Truck 01 (ESP32 + SHT31 + DS3231)<br>
-          <strong>Pipeline:</strong> Micro-ROS → ROS 2 Humble → Firebase RTDB<br>
-          <strong>Database Path:</strong> <code>logistics/truck_01</code>
+        <div class="box-header"><h3>Architecture</h3></div>
+        <p style="font-size:0.8rem; color:#94a3b8; margin:0; line-height:1.6;">
+          <strong>Vehicle:</strong> Truck 01 (ESP32 + SHT31 + DS3231)<br>
+          <strong>Stack:</strong> Micro-ROS → ROS 2 Humble → Firebase RTDB<br>
+          <strong>Node Path:</strong> <code>logistics/truck_01</code>
         </p>
       </div>
     </section>
   </div>
 
-  <!-- BOTTOM NAVIGATION -->
+  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
-    <button class="nav-item active" data-tab="tab-live"><span class="ico">📡</span>Live</button>
-    <button class="nav-item" data-tab="tab-logs"><span class="ico">📊</span>Analytics</button>
-    <button class="nav-item" data-tab="tab-settings"><span class="ico">⚙️</span>Settings</button>
+    <button class="nav-item active" data-tab="tab-live">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Live</span>
+    </button>
+    <button class="nav-item" data-tab="tab-map">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>Map</span>
+    </button>
+    <button class="nav-item" data-tab="tab-logs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>Analytics</span>
+    </button>
+    <button class="nav-item" data-tab="tab-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/></svg>
+      <span>Settings</span>
+    </button>
   </nav>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, query, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js');
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 
-    const app = initializeApp({
-      databaseURL: "https://coldchain-logistics-cc3d5-default-rtdb.firebaseio.com/"
-    });
+    const app = initializeApp({ databaseURL: "https://coldchain-logistics-cc3d5-default-rtdb.firebaseio.com/" });
     const db = getDatabase(app);
 
-    // Settings (LocalStorage)
+    // Settings
     let config = {
       minTemp: parseFloat(localStorage.getItem('cc_minTemp') || '2.0'),
       maxTemp: parseFloat(localStorage.getItem('cc_maxTemp') || '8.0'),
       maxHum: parseFloat(localStorage.getItem('cc_maxHum') || '75.0'),
       vibe: localStorage.getItem('cc_vibe') !== 'false'
     };
-
     const inpMinTemp = document.getElementById('inpMinTemp');
     const inpMaxTemp = document.getElementById('inpMaxTemp');
     const inpMaxHum = document.getElementById('inpMaxHum');
@@ -247,9 +369,41 @@
       localStorage.setItem('cc_maxHum', config.maxHum);
       localStorage.setItem('cc_vibe', config.vibe);
       loadSettingsUI();
-      document.getElementById('saveMsg').innerText = "✅ Settings saved!";
+      document.getElementById('saveMsg').innerText = "Settings saved successfully";
       setTimeout(() => document.getElementById('saveMsg').innerText = "", 2000);
       if (currentEntries.length) renderAll(currentEntries);
+    });
+
+    // Leaflet Dark Map Setup
+    const map = L.map('map', { zoomControl: false }).setView([31.3916, 74.2414], 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      maxZoom: 19
+    }).addTo(map);
+
+    const truckIcon = L.divIcon({
+      className: 'custom-pin',
+      html: `<div style="width:18px;height:18px;background:#38bdf8;border:3px solid #fff;border-radius:50%;box-shadow:0 0 14px #38bdf8;"></div>`,
+      iconSize: [18, 18], iconAnchor: [9, 9]
+    });
+    const marker = L.marker([31.3916, 74.2414], { icon: truckIcon }).addTo(map).bindPopup("<b>Truck 01</b><br>Cold Chain Unit");
+
+    function updateMap(lat, lng, sourceLabel) {
+      marker.setLatLng([lat, lng]);
+      map.panTo([lat, lng]);
+      document.getElementById('gpsCoords').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+      const badge = document.getElementById('gpsSource');
+      badge.innerText = sourceLabel;
+      badge.className = sourceLabel.includes('Live') ? 'pill ok' : 'pill cold';
+    }
+
+    // Phone GPS Demo Button
+    document.getElementById('phoneGpsBtn').addEventListener('click', () => {
+      if (!navigator.geolocation) return alert("GPS not supported on this browser.");
+      navigator.geolocation.getCurrentPosition(
+        pos => updateMap(pos.coords.latitude, pos.coords.longitude, "Live Phone GPS"),
+        () => alert("Please allow Location permission in your browser.")
+      );
     });
 
     // Bottom Navigation
@@ -259,30 +413,93 @@
         document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById(btn.dataset.tab).classList.add('active');
+        if (btn.dataset.tab === 'tab-map') setTimeout(() => map.invalidateSize(), 150);
       });
     });
 
-    let soundEnabled = false;
-    let onlyBreaches = false;
-    let lastAlertTime = "";
-    let lastDataTimestamp = null;
-    let currentEntries = [];
+    // Sleek Gradient Chart
+    let activeMetric = 'temp';
+    const ctx = document.getElementById('tempChart').getContext('2d');
+    const blueGrad = ctx.createLinearGradient(0, 0, 0, 200);
+    blueGrad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+    blueGrad.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
 
+    const greenGrad = ctx.createLinearGradient(0, 0, 0, 200);
+    greenGrad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+    greenGrad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          data: [],
+          borderColor: '#38bdf8',
+          backgroundColor: blueGrad,
+          borderWidth: 2.5,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: '#1e293b', titleColor: '#94a3b8', bodyColor: '#f8fafc', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, padding: 10 }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#64748b', maxTicksLimit: 5, font: { size: 10 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4, 4] }, ticks: { color: '#64748b', font: { size: 10 } } }
+        }
+      }
+    });
+
+    document.querySelectorAll('.seg-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeMetric = btn.dataset.metric;
+        updateChart(currentEntries);
+      });
+    });
+
+    function updateChart(entries) {
+      if (!entries.length) return;
+      const recent = entries.slice(-20);
+      chart.data.labels = recent.map(e => (e.timestamp.split(' ')[1] || e.timestamp).slice(0, 8));
+      const ds = chart.data.datasets[0];
+      if (activeMetric === 'temp') {
+        ds.label = 'Temp (°C)';
+        ds.data = recent.map(e => e.temperature);
+        ds.borderColor = '#38bdf8';
+        ds.backgroundColor = blueGrad;
+      } else {
+        ds.label = 'Humidity (%)';
+        ds.data = recent.map(e => e.humidity);
+        ds.borderColor = '#10b981';
+        ds.backgroundColor = greenGrad;
+      }
+      chart.update();
+    }
+
+    // Audio, Filters & CSV
+    let soundEnabled = false, onlyBreaches = false, lastAlertTime = "", lastDataTimestamp = null, currentEntries = [];
     function playBeep() {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.3);
+      const a = new (window.AudioContext || window.webkitAudioContext)();
+      const o = a.createOscillator();
+      o.type = 'sine'; o.frequency.setValueAtTime(880, a.currentTime);
+      o.connect(a.destination); o.start(); o.stop(a.currentTime + 0.25);
     }
 
     const soundBtn = document.getElementById('soundBtn');
     soundBtn.addEventListener('click', () => {
       soundEnabled = !soundEnabled;
-      soundBtn.innerText = soundEnabled ? "🔔 Sound ON" : "🔇 Muted";
       soundBtn.classList.toggle('active', soundEnabled);
+      soundBtn.querySelector('span').innerText = soundEnabled ? "Sound ON" : "Muted";
       if (soundEnabled) playBeep();
     });
 
@@ -295,67 +512,23 @@
 
     document.getElementById('csvBtn').addEventListener('click', () => {
       if (!currentEntries.length) return;
-      let csv = "Timestamp,Temperature (C),Humidity (%),Battery (%)\n";
-      currentEntries.forEach(e => {
-        csv += `${e.timestamp},${e.temperature},${e.humidity},${e.battery ?? ''}\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
+      let csv = "Timestamp,Temperature (C),Humidity (%),Battery (%),Lat,Lng\n";
+      currentEntries.forEach(e => csv += `${e.timestamp},${e.temperature},${e.humidity},${e.battery ?? ''},${e.lat ?? ''},${e.lng ?? ''}\n`);
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = "coldchain_truck01_report.csv";
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+      a.download = "coldchain_truck01_logs.csv";
       a.click();
-    });
-
-    // Dual-Axis Chart
-    const chart = new Chart(document.getElementById('tempChart').getContext('2d'), {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: 'Temp (°C)',
-            data: [],
-            borderColor: '#38bdf8',
-            backgroundColor: 'rgba(56, 189, 248, 0.15)',
-            yAxisID: 'y',
-            tension: 0.3,
-            fill: true
-          },
-          {
-            label: 'Humidity (%)',
-            data: [],
-            borderColor: '#34d399',
-            borderDash: [4, 4],
-            yAxisID: 'y1',
-            tension: 0.3,
-            fill: false
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { labels: { color: '#cbd5e1', boxWidth: 12 } } },
-        scales: {
-          x: { ticks: { color: '#94a3b8', maxTicksLimit: 6 }, grid: { color: '#334155' } },
-          y: { type: 'linear', position: 'left', ticks: { color: '#38bdf8' }, grid: { color: '#334155' } },
-          y1: { type: 'linear', position: 'right', min: 0, max: 100, ticks: { color: '#34d399' }, grid: { drawOnChartArea: false } }
-        }
-      }
     });
 
     function checkOnlineStatus() {
       const dot = document.getElementById('connDot');
       const txt = document.getElementById('connText');
       if (!lastDataTimestamp) return;
-      const parsed = new Date(lastDataTimestamp.replace(' ', 'T'));
-      const diffSec = (Date.now() - parsed.getTime()) / 1000;
+      const diffSec = (Date.now() - new Date(lastDataTimestamp.replace(' ', 'T')).getTime()) / 1000;
       if (!isNaN(diffSec) && diffSec < 25) {
-        dot.className = "dot online";
-        txt.innerText = "Live — Sensor Online";
+        dot.className = "dot online"; txt.innerText = "Truck 01 • Online";
       } else {
-        dot.className = "dot offline";
-        txt.innerText = "Offline — Showing Last Reading";
+        dot.className = "dot offline"; txt.innerText = "Truck 01 • Offline";
       }
     }
     setInterval(checkOnlineStatus, 5000);
@@ -368,22 +541,12 @@
 
     function renderTable(entries) {
       let list = entries.slice().reverse();
-      if (onlyBreaches) {
-        list = list.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp || e.humidity > config.maxHum);
-      }
-      const tbody = document.getElementById('logTable');
-      tbody.innerHTML = list.slice(0, 20).map(e => {
-        const isHot = e.temperature > config.maxTemp;
-        const isCold = e.temperature < config.minTemp;
-        const status = isHot ? '🔴 High' : isCold ? '🔵 Freeze' : e.humidity > config.maxHum ? '🟡 Hum' : '🟢 OK';
-        return `
-          <tr>
-            <td>${e.timestamp.split(' ')[1] || e.timestamp}</td>
-            <td class="${isHot ? 'hot' : isCold ? 'cold' : ''}">${e.temperature}°C</td>
-            <td>${e.humidity}%</td>
-            <td>${status}</td>
-          </tr>`;
-      }).join('') || '<tr><td colspan="4" style="text-align:center;color:#94a3b8;">No matching records</td></tr>';
+      if (onlyBreaches) list = list.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp || e.humidity > config.maxHum);
+      document.getElementById('logTable').innerHTML = list.slice(0, 20).map(e => {
+        const isHot = e.temperature > config.maxTemp, isCold = e.temperature < config.minTemp;
+        const badge = isHot ? '<span class="pill hot">High</span>' : isCold ? '<span class="pill cold">Freeze</span>' : e.humidity > config.maxHum ? '<span class="pill hum">Hum</span>' : '<span class="pill ok">Safe</span>';
+        return `<tr><td>${(e.timestamp.split(' ')[1] || e.timestamp).slice(0,8)}</td><td>${e.temperature}°C</td><td>${e.humidity}%</td><td>${badge}</td></tr>`;
+      }).join('') || '<tr><td colspan="4" style="text-align:center;color:#64748b;">No records</td></tr>';
     }
 
     function renderAll(entries) {
@@ -391,51 +554,41 @@
       lastDataTimestamp = latest.timestamp;
       checkOnlineStatus();
 
-      // Main Cards
       document.getElementById('tempVal').innerText = `${latest.temperature} °C`;
       document.getElementById('humVal').innerText = `${latest.humidity} %`;
-      document.getElementById('lastUpdate').innerText = `Last Update: ${latest.timestamp}`;
+      document.getElementById('lastUpdate').innerText = `Updated: ${latest.timestamp}`;
 
-      // Dew Point
       const dp = calcDewPoint(latest.temperature, latest.humidity);
       document.getElementById('dewVal').innerText = `${dp} °C`;
-      document.getElementById('dewSub').innerText = (latest.temperature - dp < 2) ? "⚠️ Moisture Risk" : "Dry & Safe";
+      document.getElementById('dewSub').innerText = (latest.temperature - dp < 2) ? "Moisture Risk" : "Dry & Safe";
 
-      // Battery Health
-      const batVal = document.getElementById('batVal');
-      const batSub = document.getElementById('batSub');
-      const batBar = document.getElementById('batBar');
+      // Battery
+      const batVal = document.getElementById('batVal'), batSub = document.getElementById('batSub'), batBar = document.getElementById('batBar');
       if (typeof latest.battery === 'number') {
         const b = Math.max(0, Math.min(100, latest.battery));
-        batVal.innerText = `${b} %`;
-        batBar.style.width = `${b}%`;
-        if (b > 50) { batBar.style.background = '#22c55e'; batSub.innerText = "Health: Good"; }
-        else if (b > 20) { batBar.style.background = '#eab308'; batSub.innerText = "Health: Moderate"; }
-        else { batBar.style.background = '#ef4444'; batSub.innerText = "⚠️ Low Battery!"; }
+        batVal.innerText = `${b} %`; batBar.style.width = `${b}%`;
+        batBar.style.background = b > 50 ? '#10b981' : b > 20 ? '#f59e0b' : '#ef4444';
+        batSub.innerText = b > 50 ? "Health: Good" : b > 20 ? "Health: Moderate" : "Low Battery";
       } else {
-        batVal.innerText = "USB / --";
-        batBar.style.width = "100%";
-        batBar.style.background = "#475569";
-        batSub.innerText = "Awaiting ESP32 ADC";
+        batVal.innerText = "USB / --"; batBar.style.width = "100%"; batBar.style.background = "#334155"; batSub.innerText = "External Power";
       }
 
-      // Status & Alerts
+      // Live GPS from Firebase (if sent by ESP32)
+      if (typeof latest.lat === 'number' && typeof latest.lng === 'number') {
+        updateMap(latest.lat, latest.lng, "Live GPS Sensor");
+      }
+
+      // Status
       const statusBox = document.getElementById('statusBox');
       let alertTriggered = false;
       if (latest.temperature > config.maxTemp) {
-        statusBox.className = "status alert";
-        statusBox.innerText = `⚠️ OVERHEAT ALERT: ${latest.temperature} °C (> ${config.maxTemp}°C)`;
-        alertTriggered = true;
+        statusBox.className = "status alert"; statusBox.innerText = `OVERHEAT ALERT — ${latest.temperature}°C (Max ${config.maxTemp}°C)`; alertTriggered = true;
       } else if (latest.temperature < config.minTemp) {
-        statusBox.className = "status alert";
-        statusBox.innerText = `🧊 FREEZING ALERT: ${latest.temperature} °C (< ${config.minTemp}°C)`;
-        alertTriggered = true;
+        statusBox.className = "status alert"; statusBox.innerText = `FREEZING ALERT — ${latest.temperature}°C (Min ${config.minTemp}°C)`; alertTriggered = true;
       } else if (latest.humidity > config.maxHum) {
-        statusBox.className = "status warn";
-        statusBox.innerText = `💧 HIGH HUMIDITY: ${latest.humidity} % (> ${config.maxHum}%)`;
+        statusBox.className = "status warn"; statusBox.innerText = `HIGH HUMIDITY — ${latest.humidity}% (Max ${config.maxHum}%)`;
       } else {
-        statusBox.className = "status normal";
-        statusBox.innerText = "✅ Cooling Normal — All Parameters Safe";
+        statusBox.className = "status normal"; statusBox.innerText = "Cooling Normal — All Parameters Safe";
       }
 
       if (alertTriggered && lastAlertTime !== latest.timestamp) {
@@ -444,33 +597,21 @@
         lastAlertTime = latest.timestamp;
       }
 
-      // Stats
+      // Analytics
       const temps = entries.map(e => e.temperature);
-      const minT = Math.min(...temps).toFixed(2);
-      const maxT = Math.max(...temps).toFixed(2);
-      const avgT = (temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(2);
       const breaches = entries.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp).length;
-      const comp = (((entries.length - breaches) / entries.length) * 100).toFixed(0);
-
-      document.getElementById('statMin').innerText = `${minT}°C`;
-      document.getElementById('statAvg').innerText = `${avgT}°C`;
-      document.getElementById('statMax').innerText = `${maxT}°C`;
+      document.getElementById('statMin').innerText = `${Math.min(...temps).toFixed(1)}°C`;
+      document.getElementById('statAvg').innerText = `${(temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1)}°C`;
+      document.getElementById('statMax').innerText = `${Math.max(...temps).toFixed(1)}°C`;
       document.getElementById('statBreach').innerText = breaches;
-      document.getElementById('statComp').innerText = `${comp} %`;
+      document.getElementById('statComp').innerText = `${(((entries.length - breaches) / entries.length) * 100).toFixed(0)}%`;
 
-      // Chart (last 20)
-      const recent = entries.slice(-20);
-      chart.data.labels = recent.map(e => e.timestamp.split(' ')[1] || e.timestamp);
-      chart.data.datasets[0].data = recent.map(e => e.temperature);
-      chart.data.datasets[1].data = recent.map(e => e.humidity);
-      chart.update();
-
+      updateChart(entries);
       renderTable(entries);
     }
 
-    const truckRef = query(ref(db, 'logistics/truck_01'), limitToLast(50));
-    onValue(truckRef, (snapshot) => {
-      const data = snapshot.val();
+    onValue(query(ref(db, 'logistics/truck_01'), limitToLast(50)), (snap) => {
+      const data = snap.val();
       if (!data) return;
       currentEntries = Object.values(data);
       renderAll(currentEntries);
