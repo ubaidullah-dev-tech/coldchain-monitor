@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ColdChain Pro</title>
   <link rel="manifest" href="manifest.json">
   <meta id="themeColorMeta" name="theme-color" content="#070b14">
@@ -21,7 +21,7 @@
       --bg: #070b14;
       --surface: #0f172a;
       --surface-2: #1e293b;
-      --header-bg: rgba(15, 23, 42, 0.85);
+      --header-bg: rgba(15, 23, 42, 0.88);
       --border: rgba(255, 255, 255, 0.08);
       --text: #f8fafc;
       --muted: #94a3b8;
@@ -38,7 +38,7 @@
       --bg: #f1f5f9;
       --surface: #ffffff;
       --surface-2: #e2e8f0;
-      --header-bg: rgba(255, 255, 255, 0.88);
+      --header-bg: rgba(255, 255, 255, 0.9);
       --border: rgba(15, 23, 42, 0.08);
       --text: #0f172a;
       --muted: #64748b;
@@ -81,7 +81,8 @@
       background: none; border: none; color: var(--muted); font-size: 0.75rem; font-weight: 600; cursor: pointer; padding: 4px 6px;
     }
 
-    #appView { display: none; padding-bottom: 96px; }
+    /* Extra bottom padding so floating nav never overlaps chart or tables */
+    #appView { display: none; padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); }
 
     header {
       background: var(--header-bg); backdrop-filter: blur(14px);
@@ -95,7 +96,7 @@
       display: flex; align-items: center; justify-content: center; color: #fff;
     }
     .brand h1 { font-size: 0.98rem; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
-    .conn-badge { font-size: 0.7rem; margin-top: 2px; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 500; }
+    .conn-badge { font-size: 0.7rem; margin-top: 2px; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 600; }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: #64748b; }
     .dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); }
     .dot.offline { background: var(--red); }
@@ -120,28 +121,30 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
     .hero-card {
-      background: linear-gradient(135deg, rgba(2, 132, 199, 0.16), rgba(16, 185, 129, 0.08));
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(16, 185, 129, 0.07));
       border: 1px solid rgba(56, 189, 248, 0.22);
       border-radius: 16px; padding: 14px 16px; margin-bottom: 12px;
       display: flex; justify-content: space-between; align-items: center; gap: 10px;
     }
-    .hero-title { font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-    .hero-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
-    .signal-bars { display: flex; align-items: flex-end; gap: 3px; height: 16px; }
+    .hero-title { font-size: 0.92rem; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .hero-sub { font-size: 0.72rem; color: var(--muted); margin-top: 5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .signal-bars { display: flex; align-items: flex-end; gap: 3px; height: 16px; justify-content: flex-end; }
     .signal-bars span { width: 3.5px; background: var(--green); border-radius: 2px; }
     .signal-bars span:nth-child(1) { height: 5px; }
     .signal-bars span:nth-child(2) { height: 9px; }
     .signal-bars span:nth-child(3) { height: 13px; }
     .signal-bars span:nth-child(4) { height: 16px; }
-    .signal-bars.off span { background: var(--muted); opacity: 0.35; }
+    .signal-bars.off span { background: var(--muted); opacity: 0.3; }
 
     .status {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 11px 14px; border-radius: 12px; font-weight: 600; margin-bottom: 14px; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
+      padding: 11px 14px; border-radius: 12px; font-weight: 600; margin-bottom: 14px; font-size: 0.8rem; line-height: 1.4;
     }
     .normal { background: rgba(16, 185, 129, 0.12); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.25); }
     .warn { background: rgba(245, 158, 11, 0.13); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.28); }
     .alert { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.4); animation: pulse 1.2s infinite; }
+    .stale { background: rgba(239, 68, 68, 0.12); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.32); }
+    .neutral { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
     @keyframes pulse { 50% { opacity: 0.65; } }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
@@ -149,12 +152,22 @@
     .card {
       background: var(--surface); padding: 14px; border-radius: 16px; box-shadow: var(--shadow);
       border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;
+      transition: opacity 0.25s, filter 0.25s;
     }
-    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    /* Stale state dims cards and shows last-known badge */
+    .cards-stale .card { opacity: 0.68; filter: grayscale(45%); }
+    .last-known-tag {
+      display: none; font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+      color: var(--amber); background: rgba(245, 158, 11, 0.14); padding: 2px 6px; border-radius: 6px; margin-top: 4px; width: fit-content;
+    }
+    .cards-stale .last-known-tag { display: inline-block; }
+
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 4px; }
     .card h2 { margin: 0; font-size: 0.67rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; font-weight: 700; }
-    .card .val { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.6px; color: var(--blue); }
+    .card .val { font-size: 1.55rem; font-weight: 800; letter-spacing: -0.5px; color: var(--blue); }
     .card .val.hum { color: var(--green); }
     .card .val.bat { color: var(--purple); }
+    .card .val.bat-usb { font-size: 1.05rem; color: var(--text); font-weight: 700; }
     .card .val.dew { color: var(--amber); }
     .card .sub { font-size: 0.7rem; color: var(--muted); margin-top: 6px; font-weight: 500; }
 
@@ -171,19 +184,22 @@
     }
     .seg-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
 
+    /* Simplified 5-slot Time Filter Bar (1H, 24H, 7D, 1M, More) */
     .time-bar {
-      display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;
+      display: grid; grid-template-columns: repeat(4, 1fr) 1.25fr; gap: 4px;
       background: var(--bg); padding: 4px; border-radius: 10px; border: 1px solid var(--border);
       margin-bottom: 12px;
     }
-    .tf-btn {
+    .tf-btn, .tf-select {
       background: transparent; border: none; color: var(--muted); font-size: 0.7rem; font-weight: 700;
-      padding: 6px 0; border-radius: 7px; cursor: pointer; transition: 0.15s;
+      padding: 6px 4px; border-radius: 7px; cursor: pointer; transition: 0.15s; text-align: center; outline: none;
     }
-    .tf-btn.active { background: var(--blue-strong); color: #fff; }
+    .tf-btn.active, .tf-select.active { background: var(--blue-strong); color: #fff; }
+    .tf-select option { background: var(--surface); color: var(--text); }
 
-    .chart-wrap { position: relative; height: 225px; width: 100%; }
-    .time { text-align: center; color: var(--muted); font-size: 0.73rem; margin-bottom: 14px; font-weight: 500; }
+    .chart-wrap { position: relative; height: 230px; width: 100%; }
+    .time { text-align: center; color: var(--muted); font-size: 0.74rem; margin-bottom: 14px; font-weight: 600; }
+    .time.stale-time { color: var(--red); }
 
     #map { height: 350px; width: 100%; border-radius: 14px; border: 1px solid var(--border); z-index: 1; }
     .leaflet-control-attribution { display: none !important; }
@@ -195,11 +211,12 @@
     table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
     th, td { padding: 10px 5px; text-align: left; border-bottom: 1px solid var(--border); }
     th { color: var(--muted); font-weight: 700; font-size: 0.68rem; text-transform: uppercase; }
-    .pill { padding: 3px 8px; border-radius: 99px; font-size: 0.68rem; font-weight: 700; display: inline-block; }
+    .pill { padding: 3px 8px; border-radius: 99px; font-size: 0.68rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
     .pill.ok { background: rgba(16,185,129,0.15); color: var(--green); }
     .pill.hot { background: rgba(239,68,68,0.15); color: var(--red); }
     .pill.cold { background: rgba(56,189,248,0.15); color: var(--blue); }
     .pill.hum { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .pill.neutral { background: var(--surface-2); color: var(--muted); }
 
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
@@ -211,7 +228,7 @@
     .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
 
     .bottom-nav {
-      position: fixed; bottom: 12px; left: 14px; right: 14px; max-width: 690px; margin: auto;
+      position: fixed; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); left: 14px; right: 14px; max-width: 690px; margin: auto;
       background: var(--header-bg); backdrop-filter: blur(16px);
       border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow);
       display: grid; grid-template-columns: repeat(4, 1fr);
@@ -236,7 +253,7 @@
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
         </div>
         <h1>ColdChain Pro</h1>
-        <p>Enterprise Cold-Chain Telemetry & Fleet Monitor</p>
+        <p>Cold-Chain Cargo & Fleet Monitor</p>
       </div>
 
       <div id="loginErr" class="login-err"></div>
@@ -272,7 +289,7 @@
       </div>
 
       <div class="header-actions">
-        <button id="themeBtn" class="icon-btn" title="Toggle Dark/Light Mode">
+        <button id="themeBtn" class="icon-btn" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
           <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         </button>
         <button id="soundBtn" class="btn">
@@ -289,27 +306,28 @@
           <div>
             <div class="hero-title">
               <span>Truck 01 • Reefer Unit</span>
-              <span class="pill ok" id="unitModeBadge">Active</span>
+              <span class="pill neutral" id="unitModeBadge">Connecting</span>
             </div>
-            <div class="hero-sub" id="heroSubTxt">ESP32 + SHT31 + DS3231 • Micro-ROS Telemetry</div>
+            <div class="hero-sub" id="lastBreachSummary">Checking breach history...</div>
           </div>
           <div style="text-align:right;">
             <div class="signal-bars off" id="signalBars">
               <span></span><span></span><span></span><span></span>
             </div>
-            <div style="font-size:0.65rem; color:var(--muted); margin-top:4px; font-weight:600;" id="recordCountLbl">0 logs</div>
+            <div style="font-size:0.65rem; color:var(--muted); margin-top:4px; font-weight:600;" id="recordCountLbl">Loading...</div>
           </div>
         </div>
 
-        <div id="statusBox" class="status normal">Connecting to Firebase...</div>
+        <div id="statusBox" class="status neutral">⏳ Connecting to sensor feed...</div>
 
-        <div class="grid-2">
+        <div class="grid-2" id="metricGrid">
           <div class="card">
             <div class="card-top">
               <h2>Temperature</h2>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
             </div>
-            <div id="tempVal" class="val">-- °C</div>
+            <div id="tempVal" class="val" style="font-size:1.25rem;">Loading...</div>
+            <span class="last-known-tag">Last known</span>
             <div class="meter-track"><div id="tempMeter" class="meter-fill"></div></div>
             <div id="tempRangeTxt" class="sub">Safe: 2°C – 8°C</div>
           </div>
@@ -319,32 +337,35 @@
               <h2>Humidity</h2>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
             </div>
-            <div id="humVal" class="val hum">-- %</div>
+            <div id="humVal" class="val hum" style="font-size:1.25rem;">Loading...</div>
+            <span class="last-known-tag">Last known</span>
             <div class="meter-track"><div id="humMeter" class="meter-fill" style="background:var(--green);"></div></div>
             <div id="humRangeTxt" class="sub">Limit: &lt; 75%</div>
           </div>
 
           <div class="card">
             <div class="card-top">
-              <h2>Battery Health</h2>
-              <span id="batHealthPill" class="pill cold" style="font-size:0.62rem; padding:2px 6px;">--</span>
+              <h2>Power / Battery</h2>
+              <span id="batHealthPill" class="pill neutral" style="font-size:0.62rem; padding:2px 6px;">Checking</span>
             </div>
-            <div id="batVal" class="val bat">-- %</div>
-            <div class="meter-track"><div id="batBar" class="meter-fill" style="background:var(--purple);"></div></div>
-            <div id="batSub" class="sub">Awaiting Battery Sensor</div>
+            <div id="batVal" class="val bat" style="font-size:1.15rem;">Loading...</div>
+            <span class="last-known-tag">Last known</span>
+            <div class="meter-track" id="batMeterWrap"><div id="batBar" class="meter-fill" style="background:var(--purple);"></div></div>
+            <div id="batSub" class="sub">Checking power source</div>
           </div>
 
           <div class="card">
             <div class="card-top">
               <h2>Dew Point</h2>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
+              <span id="dewRiskPill" class="pill neutral" style="font-size:0.62rem; padding:2px 6px;">Checking</span>
             </div>
-            <div id="dewVal" class="val dew">-- °C</div>
-            <div id="dewSub" class="sub" style="margin-top:16px;">Condensation Risk</div>
+            <div id="dewVal" class="val dew" style="font-size:1.25rem;">Loading...</div>
+            <span class="last-known-tag">Last known</span>
+            <div id="dewSub" class="sub" style="margin-top:16px;">Calculating condensation risk</div>
           </div>
         </div>
 
-        <div id="lastUpdate" class="time">Last Update: --</div>
+        <div id="lastUpdate" class="time">Last Telemetry: Waiting for reading...</div>
 
         <div class="box">
           <div class="box-header">
@@ -361,8 +382,10 @@
             <button class="tf-btn" data-range="24h">24H</button>
             <button class="tf-btn" data-range="7d">7D</button>
             <button class="tf-btn" data-range="1m">1M</button>
-            <button class="tf-btn" data-range="1y">1Y</button>
-            <button class="tf-btn active" data-range="all">All</button>
+            <select class="tf-select active" id="liveMoreSelect" aria-label="More time ranges">
+              <option value="all" selected>All ▾</option>
+              <option value="1y">1Y</option>
+            </select>
           </div>
 
           <div class="chart-wrap">
@@ -375,13 +398,13 @@
       <section id="tab-map" class="tab-view">
         <div class="box">
           <div class="box-header">
-            <h3>Truck 01 — Live GPS</h3>
-            <button id="phoneGpsBtn" class="btn">Use Phone GPS</button>
+            <h3>Truck 01 — Location</h3>
+            <button id="phoneGpsBtn" class="btn">Test: Phone GPS</button>
           </div>
           <div id="map"></div>
           <div class="map-meta">
-            <span id="gpsCoords">Lat: 31.3916, Lng: 74.2414</span>
-            <span id="gpsSource" class="pill cold">Default (Lahore)</span>
+            <span id="gpsCoords">No GPS coordinates received</span>
+            <span id="gpsSource" class="pill neutral">No GPS fix</span>
           </div>
         </div>
       </section>
@@ -393,25 +416,27 @@
           <button class="tf-btn" data-range="24h">24H</button>
           <button class="tf-btn" data-range="7d">7D</button>
           <button class="tf-btn" data-range="1m">1M</button>
-          <button class="tf-btn" data-range="1y">1Y</button>
-          <button class="tf-btn active" data-range="all">All</button>
+          <select class="tf-select active" id="analyticsMoreSelect" aria-label="More time ranges">
+            <option value="all" selected>All ▾</option>
+            <option value="1y">1Y</option>
+          </select>
         </div>
 
         <div class="grid-3">
-          <div class="card"><h2>Min</h2><div id="statMin" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
-          <div class="card"><h2>Avg</h2><div id="statAvg" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
-          <div class="card"><h2>Max</h2><div id="statMax" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
+          <div class="card"><h2>Min</h2><div id="statMin" class="val" style="font-size:1.15rem; margin-top:4px;">Loading</div></div>
+          <div class="card"><h2>Avg</h2><div id="statAvg" class="val" style="font-size:1.15rem; margin-top:4px;">Loading</div></div>
+          <div class="card"><h2>Max</h2><div id="statMax" class="val" style="font-size:1.15rem; margin-top:4px;">Loading</div></div>
         </div>
 
         <div class="grid-2">
           <div class="card">
             <h2>Compliance</h2>
-            <div id="statComp" class="val hum" style="font-size:1.5rem; margin-top:4px;">-- %</div>
+            <div id="statComp" class="val hum" style="font-size:1.45rem; margin-top:4px;">Loading</div>
             <div class="sub" id="statSampleSub">Selected period</div>
           </div>
           <div class="card">
             <h2>Breaches</h2>
-            <div id="statBreach" class="val" style="font-size:1.5rem; color:var(--red); margin-top:4px;">0</div>
+            <div id="statBreach" class="val" style="font-size:1.45rem; color:var(--red); margin-top:4px;">0</div>
             <div class="sub">Out-of-range events</div>
           </div>
         </div>
@@ -426,7 +451,7 @@
           </div>
           <table>
             <thead><tr><th>Date & Time</th><th>Temp</th><th>Hum</th><th>Status</th></tr></thead>
-            <tbody id="logTable"></tbody>
+            <tbody id="logTable"><tr><td colspan="4" style="text-align:center;color:var(--muted);">Loading logs...</td></tr></tbody>
           </table>
         </div>
       </section>
@@ -439,7 +464,7 @@
           <div class="field"><label>Max Safe Temp (°C)</label><input type="number" step="0.5" id="inpMaxTemp"></div>
           <div class="field"><label>Max Safe Humidity (%)</label><input type="number" step="1" id="inpMaxHum"></div>
           <div class="toggle-row">
-            <span>Vibrate on Alert</span>
+            <span>Vibrate on Alert (while app is open)</span>
             <input type="checkbox" id="inpVibe" style="width:18px; height:18px;">
           </div>
           <button id="saveSettingsBtn" class="btn primary">Save Thresholds</button>
@@ -447,11 +472,11 @@
         </div>
 
         <div class="box">
-          <div class="box-header"><h3>Operator Session</h3></div>
-          <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px 0; line-height:1.6;">
-            <strong>Signed in as:</strong> <span id="userEmailLbl" style="color:var(--text);">--</span><br>
+          <div class="box-header"><h3>Operator Session & Device Info</h3></div>
+          <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px 0; line-height:1.65;">
+            <strong>Signed in as:</strong> <span id="userEmailLbl" style="color:var(--text);">Loading...</span><br>
             <strong>Auto-Lock Timer:</strong> Locks after 5 min of inactivity<br>
-            <strong>Vehicle:</strong> Truck 01 (ESP32 + SHT31 + DS3231)
+            <strong>Hardware:</strong> Truck 01 (ESP32 + SHT31 + DS3231 • Micro-ROS)
           </p>
           <button id="logoutBtn" class="btn danger">Sign Out</button>
         </div>
@@ -529,6 +554,7 @@
     const db = getDatabase(app);
 
     const IDLE_LIMIT_MS = 5 * 60 * 1000;
+    const STALE_THRESHOLD_SEC = 180; // 3 minutes without data => stale warning
 
     function clearSessionStorage() {
       sessionStorage.removeItem('cc_active_session');
@@ -537,9 +563,7 @@
     }
 
     function recordActivity() {
-      if (auth.currentUser) {
-        sessionStorage.setItem('cc_last_activity', Date.now().toString());
-      }
+      if (auth.currentUser) sessionStorage.setItem('cc_last_activity', Date.now().toString());
     }
 
     function checkIdleLock() {
@@ -554,13 +578,13 @@
     ['touchstart', 'click', 'scroll', 'keydown'].forEach(evt => {
       window.addEventListener(evt, recordActivity, { passive: true });
     });
-
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') checkIdleLock();
     });
     window.addEventListener('focus', checkIdleLock);
     setInterval(checkIdleLock, 5000);
 
+    // Theme
     const sunSVG = `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`;
     const moonSVG = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
     let chart = null;
@@ -578,11 +602,11 @@
       }
     }
     applyTheme(localStorage.getItem('cc_theme') || 'dark');
-
     document.getElementById('themeBtn').addEventListener('click', () => {
       applyTheme(document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
     });
 
+    // Password Toggle & Login
     const loginPass = document.getElementById('loginPass');
     const togglePassBtn = document.getElementById('togglePassBtn');
     togglePassBtn.addEventListener('click', () => {
@@ -624,6 +648,7 @@
       signOut(auth);
     });
 
+    // Settings
     let config = {
       minTemp: parseFloat(localStorage.getItem('cc_minTemp') || '2.0'),
       maxTemp: parseFloat(localStorage.getItem('cc_maxTemp') || '8.0'),
@@ -660,36 +685,44 @@
       if (allEntries.length) renderAll(allEntries);
     });
 
+    // Map Setup (No fake live location when GPS is absent)
     let map = null, marker = null;
     try {
       if (window.L) {
-        map = L.map('map', { zoomControl: false, attributionControl: false }).setView([31.3916, 74.2414], 13);
+        map = L.map('map', { zoomControl: false, attributionControl: false }).setView([31.3916, 74.2414], 11);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-        const truckIcon = L.divIcon({
-          className: 'custom-pin',
-          html: `<div style="width:18px;height:18px;background:#0284c7;border:3px solid #fff;border-radius:50%;box-shadow:0 0 14px #38bdf8;"></div>`,
-          iconSize: [18, 18], iconAnchor: [9, 9]
-        });
-        marker = L.marker([31.3916, 74.2414], { icon: truckIcon }).addTo(map);
       }
     } catch (e) {}
 
     function updateMap(lat, lng, sourceLabel) {
-      if (marker && map) { marker.setLatLng([lat, lng]); map.panTo([lat, lng]); }
+      if (map && window.L) {
+        if (!marker) {
+          const truckIcon = L.divIcon({
+            className: 'custom-pin',
+            html: `<div style="width:18px;height:18px;background:#0284c7;border:3px solid #fff;border-radius:50%;box-shadow:0 0 14px #38bdf8;"></div>`,
+            iconSize: [18, 18], iconAnchor: [9, 9]
+          });
+          marker = L.marker([lat, lng], { icon: truckIcon }).addTo(map);
+        } else {
+          marker.setLatLng([lat, lng]);
+        }
+        map.setView([lat, lng], 14);
+      }
       document.getElementById('gpsCoords').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
       const badge = document.getElementById('gpsSource');
       badge.innerText = sourceLabel;
-      badge.className = sourceLabel.includes('Live') ? 'pill ok' : 'pill cold';
+      badge.className = sourceLabel.includes('Sensor') ? 'pill ok' : 'pill cold';
     }
 
     document.getElementById('phoneGpsBtn').addEventListener('click', () => {
       if (!navigator.geolocation) return alert("GPS not supported on this browser.");
       navigator.geolocation.getCurrentPosition(
-        pos => updateMap(pos.coords.latitude, pos.coords.longitude, "Live Phone GPS"),
+        pos => updateMap(pos.coords.latitude, pos.coords.longitude, "Test: Phone GPS"),
         () => alert("Please allow Location permission in your browser.")
       );
     });
 
+    // Bottom Navigation
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -700,6 +733,7 @@
       });
     });
 
+    // Shared Time Filter (1H, 24H, 7D, 1M, More: 1Y / All)
     let activeRange = 'all';
     const rangeMsMap = {
       '1h': 3600 * 1000,
@@ -710,29 +744,52 @@
       'all': Infinity
     };
 
+    function parseTs(ts) {
+      if (!ts) return NaN;
+      return new Date(ts.replace(' ', 'T')).getTime();
+    }
+
+    function formatDuration(sec) {
+      if (sec < 60) return `${Math.max(1, Math.floor(sec))}s`;
+      const mins = Math.floor(sec / 60);
+      if (mins < 60) return `${mins} min${mins > 1 ? 's' : ''}`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs} hour${hrs > 1 ? 's' : ''}`;
+      const days = Math.floor(hrs / 24);
+      return `${days} day${days > 1 ? 's' : ''}`;
+    }
+
     function filterByRange(entries, rangeKey) {
       if (!entries.length || rangeKey === 'all') return entries;
       const cutoff = Date.now() - (rangeMsMap[rangeKey] || Infinity);
-      const filtered = entries.filter(e => {
-        if (!e.timestamp) return false;
-        const t = new Date(e.timestamp.replace(' ', 'T')).getTime();
+      return entries.filter(e => {
+        const t = parseTs(e.timestamp);
         return !isNaN(t) && t >= cutoff;
       });
-      return filtered.length ? filtered : entries.slice(-20);
     }
 
-    function syncTimeButtons(rangeKey) {
+    function syncTimeControls(rangeKey) {
       activeRange = rangeKey;
+      const isMore = (rangeKey === 'all' || rangeKey === '1y');
       document.querySelectorAll('.tf-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.range === rangeKey);
+        b.classList.toggle('active', !isMore && b.dataset.range === rangeKey);
+      });
+      ['liveMoreSelect', 'analyticsMoreSelect'].forEach(id => {
+        const sel = document.getElementById(id);
+        sel.classList.toggle('active', isMore);
+        if (isMore) sel.value = rangeKey;
       });
       if (allEntries.length) renderFilteredViews();
     }
 
     document.querySelectorAll('.tf-btn').forEach(btn => {
-      btn.addEventListener('click', () => syncTimeButtons(btn.dataset.range));
+      btn.addEventListener('click', () => syncTimeControls(btn.dataset.range));
+    });
+    ['liveMoreSelect', 'analyticsMoreSelect'].forEach(id => {
+      document.getElementById(id).addEventListener('change', (e) => syncTimeControls(e.target.value));
     });
 
+    // Chart Setup: Straight lines (tension: 0) + Red breach dots + Reference lines
     let activeMetric = 'temp', blueGrad = null, greenGrad = null;
     const thresholdPlugin = {
       id: 'thresholdLines',
@@ -756,8 +813,8 @@
           ctx.fillText(label, right - 44, yPos - 4);
           ctx.restore();
         };
-        drawLine(config.maxTemp, 'rgba(239, 68, 68, 0.75)', `Max ${config.maxTemp}°`);
-        drawLine(config.minTemp, 'rgba(56, 189, 248, 0.75)', `Min ${config.minTemp}°`);
+        drawLine(config.maxTemp, 'rgba(239, 68, 68, 0.8)', `Max ${config.maxTemp}°`);
+        drawLine(config.minTemp, 'rgba(56, 189, 248, 0.8)', `Min ${config.minTemp}°`);
       }
     };
 
@@ -765,11 +822,11 @@
       if (window.Chart) {
         const ctx = document.getElementById('tempChart').getContext('2d');
         blueGrad = ctx.createLinearGradient(0, 0, 0, 220);
-        blueGrad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+        blueGrad.addColorStop(0, 'rgba(56, 189, 248, 0.28)');
         blueGrad.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
 
         greenGrad = ctx.createLinearGradient(0, 0, 0, 220);
-        greenGrad.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+        greenGrad.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
         greenGrad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
 
         chart = new Chart(ctx, {
@@ -807,36 +864,50 @@
     }
 
     function updateChart(entries) {
-      if (!chart || !entries.length) return;
-      const step = Math.max(1, Math.floor(entries.length / 60));
-      const sampled = entries.filter((_, idx) => idx % step === 0);
+      if (!chart) return;
+      if (!entries.length) {
+        chart.data.labels = [];
+        chart.data.datasets = [];
+        chart.update();
+        return;
+      }
+      const step = Math.max(1, Math.floor(entries.length / 80));
+      const sampled = entries.filter((_, idx) => idx % step === 0 || idx === entries.length - 1);
 
       chart.data.labels = sampled.map(e => formatChartLabel(e.timestamp));
       chart.options.scales.y1.display = (activeMetric === 'both');
+
+      const tempPointRadius = sampled.map(e => (e.temperature > config.maxTemp || e.temperature < config.minTemp) ? 3.5 : 0);
+      const tempPointColor = sampled.map(e => (e.temperature > config.maxTemp || e.temperature < config.minTemp) ? '#ef4444' : '#38bdf8');
 
       if (activeMetric === 'temp') {
         chart.data.datasets = [{
           label: 'Temp (°C)', data: sampled.map(e => e.temperature),
           borderColor: '#38bdf8', backgroundColor: blueGrad,
-          borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.35, fill: true, yAxisID: 'y'
+          borderWidth: 2, tension: 0, fill: true, yAxisID: 'y',
+          pointRadius: tempPointRadius, pointBackgroundColor: tempPointColor, pointBorderColor: '#fff', pointBorderWidth: 1, pointHoverRadius: 5
         }];
       } else if (activeMetric === 'hum') {
         chart.data.datasets = [{
           label: 'Humidity (%)', data: sampled.map(e => e.humidity),
           borderColor: '#10b981', backgroundColor: greenGrad,
-          borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.35, fill: true, yAxisID: 'y'
+          borderWidth: 2, tension: 0, fill: true, yAxisID: 'y',
+          pointRadius: sampled.map(e => e.humidity > config.maxHum ? 3.5 : 0),
+          pointBackgroundColor: '#f59e0b', pointHoverRadius: 5
         }];
       } else {
         chart.data.datasets = [
           {
             label: 'Temp (°C)', data: sampled.map(e => e.temperature),
             borderColor: '#38bdf8', backgroundColor: blueGrad,
-            borderWidth: 2.2, pointRadius: 0, tension: 0.35, fill: true, yAxisID: 'y'
+            borderWidth: 2, tension: 0, fill: true, yAxisID: 'y',
+            pointRadius: tempPointRadius, pointBackgroundColor: tempPointColor, pointHoverRadius: 5
           },
           {
             label: 'Humidity (%)', data: sampled.map(e => e.humidity),
             borderColor: '#10b981', backgroundColor: 'transparent',
-            borderWidth: 2, borderDash: [4, 3], pointRadius: 0, tension: 0.35, fill: false, yAxisID: 'y1'
+            borderWidth: 1.8, borderDash: [4, 3], tension: 0, fill: false, yAxisID: 'y1',
+            pointRadius: 0, pointHoverRadius: 4
           }
         ];
       }
@@ -877,27 +948,83 @@
       a.click();
     });
 
-    function checkOnlineStatus() {
+    // Core Freshness, Stale-Data & Status Evaluator
+    function evaluateFreshnessAndBanner() {
       const dot = document.getElementById('connDot');
       const txt = document.getElementById('connText');
       const bars = document.getElementById('signalBars');
       const badge = document.getElementById('unitModeBadge');
-      if (!lastDataTimestamp) return;
-      const diffSec = (Date.now() - new Date(lastDataTimestamp.replace(' ', 'T')).getTime()) / 1000;
-      if (!isNaN(diffSec) && diffSec < 25) {
+      const statusBox = document.getElementById('statusBox');
+      const grid = document.getElementById('metricGrid');
+      const lastUp = document.getElementById('lastUpdate');
+
+      if (!allEntries.length || !lastDataTimestamp) {
+        dot.className = "dot offline"; txt.innerText = "Truck 01 • Offline";
+        bars.classList.add('off'); badge.className = "pill hot"; badge.innerText = "✕ Offline";
+        statusBox.className = "status stale";
+        statusBox.innerText = "⚠ Sensor not responding — No readings available";
+        grid.classList.add('cards-stale');
+        return;
+      }
+
+      const latest = allEntries[allEntries.length - 1];
+      const tsMs = parseTs(lastDataTimestamp);
+      const diffSec = isNaN(tsMs) ? Infinity : (Date.now() - tsMs) / 1000;
+      const isOnline = diffSec < 60;
+      const isStale = diffSec >= STALE_THRESHOLD_SEC;
+
+      if (isOnline) {
         dot.className = "dot online"; txt.innerText = "Truck 01 • Online";
-        bars.classList.remove('off'); badge.className = "pill ok"; badge.innerText = "Live Stream";
+        bars.classList.remove('off'); badge.className = "pill ok"; badge.innerText = "✓ Online";
       } else {
         dot.className = "dot offline"; txt.innerText = "Truck 01 • Offline";
-        bars.classList.add('off'); badge.className = "pill hum"; badge.innerText = "Standby";
+        bars.classList.add('off'); badge.className = "pill hot"; badge.innerText = "✕ Offline";
+      }
+
+      if (isStale) {
+        const ago = formatDuration(diffSec);
+        grid.classList.add('cards-stale');
+        lastUp.classList.add('stale-time');
+        lastUp.innerText = `⚠ Last Telemetry: ${latest.timestamp} (${ago} ago)`;
+        statusBox.className = "status stale";
+        statusBox.innerText = `⚠ No data for ${ago}. Readings below are last known values.`;
+        return;
+      }
+
+      // Fresh data path
+      grid.classList.remove('cards-stale');
+      lastUp.classList.remove('stale-time');
+      lastUp.innerText = `Last Telemetry: ${latest.timestamp}`;
+
+      let alertTriggered = false;
+      if (latest.temperature > config.maxTemp) {
+        statusBox.className = "status alert";
+        statusBox.innerText = `✕ BREACH: Overheat ${latest.temperature}°C (Max ${config.maxTemp}°C)`;
+        alertTriggered = true;
+      } else if (latest.temperature < config.minTemp) {
+        statusBox.className = "status alert";
+        statusBox.innerText = `✕ BREACH: Freezing ${latest.temperature}°C (Min ${config.minTemp}°C)`;
+        alertTriggered = true;
+      } else if (latest.humidity > config.maxHum) {
+        statusBox.className = "status warn";
+        statusBox.innerText = `⚠ WARNING: High Humidity ${latest.humidity}% (Max ${config.maxHum}%)`;
+      } else {
+        statusBox.className = "status normal";
+        statusBox.innerText = "✓ OK — Cooling Normal, All Parameters Safe";
+      }
+
+      if (alertTriggered && lastAlertTime !== latest.timestamp) {
+        if (soundEnabled) playBeep();
+        if (config.vibe && navigator.vibrate) navigator.vibrate([250, 100, 250]);
+        lastAlertTime = latest.timestamp;
       }
     }
-    setInterval(checkOnlineStatus, 5000);
+    setInterval(evaluateFreshnessAndBanner, 5000);
 
     function calcDewPoint(T, RH) {
       const a = 17.27, b = 237.7;
       const alpha = ((a * T) / (b + T)) + Math.log(Math.max(RH, 1) / 100);
-      return ((b * alpha) / (a - alpha)).toFixed(1);
+      return parseFloat(((b * alpha) / (a - alpha)).toFixed(1));
     }
 
     function renderTable(entries) {
@@ -905,14 +1032,30 @@
       if (onlyBreaches) list = list.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp || e.humidity > config.maxHum);
       document.getElementById('logTable').innerHTML = list.slice(0, 40).map(e => {
         const isHot = e.temperature > config.maxTemp, isCold = e.temperature < config.minTemp;
-        const badge = isHot ? '<span class="pill hot">High</span>' : isCold ? '<span class="pill cold">Freeze</span>' : e.humidity > config.maxHum ? '<span class="pill hum">Hum</span>' : '<span class="pill ok">Safe</span>';
+        const badge = isHot
+          ? '<span class="pill hot">✕ High</span>'
+          : isCold
+          ? '<span class="pill cold">✕ Freeze</span>'
+          : e.humidity > config.maxHum
+          ? '<span class="pill hum">⚠ Hum</span>'
+          : '<span class="pill ok">✓ OK</span>';
         return `<tr><td style="font-size:0.72rem;color:var(--muted);">${e.timestamp}</td><td><strong>${e.temperature}°C</strong></td><td>${e.humidity}%</td><td>${badge}</td></tr>`;
-      }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted);">No records in this range</td></tr>';
+      }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted);">No records in this time range</td></tr>';
     }
 
     function renderFilteredViews() {
       const subset = filterByRange(allEntries, activeRange);
-      if (!subset.length) return;
+      if (!subset.length) {
+        document.getElementById('statMin').innerText = 'No data';
+        document.getElementById('statAvg').innerText = 'No data';
+        document.getElementById('statMax').innerText = 'No data';
+        document.getElementById('statComp').innerText = 'No data';
+        document.getElementById('statBreach').innerText = '0';
+        document.getElementById('statSampleSub').innerText = `0 readings (${activeRange.toUpperCase()})`;
+        updateChart([]);
+        renderTable([]);
+        return;
+      }
 
       const temps = subset.map(e => e.temperature);
       const breaches = subset.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp).length;
@@ -927,15 +1070,40 @@
       renderTable(subset);
     }
 
+    function updateLastBreachSummary(entries) {
+      const el = document.getElementById('lastBreachSummary');
+      const breaches = entries.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp);
+      if (!breaches.length) {
+        el.innerHTML = `<span style="color:var(--green);font-weight:600;">✓ No temperature breaches recorded</span>`;
+        return;
+      }
+      const lastB = breaches[breaches.length - 1];
+      const tsMs = parseTs(lastB.timestamp);
+      const ago = isNaN(tsMs) ? lastB.timestamp : `${formatDuration((Date.now() - tsMs) / 1000)} ago`;
+      const last24h = breaches.filter(e => {
+        const t = parseTs(e.timestamp);
+        return !isNaN(t) && (Date.now() - t) <= 24 * 3600 * 1000;
+      }).length;
+      el.innerHTML = `<span style="color:var(--red);font-weight:600;">⚠ Last breach: ${ago} (${lastB.temperature}°C)</span>${last24h > 0 ? ` • ${last24h} in 24h` : ''}`;
+    }
+
     function renderAll(entries) {
+      if (!entries.length) {
+        evaluateFreshnessAndBanner();
+        return;
+      }
       const latest = entries[entries.length - 1];
       lastDataTimestamp = latest.timestamp;
-      checkOnlineStatus();
 
       document.getElementById('recordCountLbl').innerText = `${entries.length} logs`;
-      document.getElementById('tempVal').innerText = `${latest.temperature} °C`;
-      document.getElementById('humVal').innerText = `${latest.humidity} %`;
-      document.getElementById('lastUpdate').innerText = `Last Telemetry: ${latest.timestamp}`;
+
+      const tempEl = document.getElementById('tempVal');
+      tempEl.style.fontSize = '1.6rem';
+      tempEl.innerText = `${latest.temperature} °C`;
+
+      const humEl = document.getElementById('humVal');
+      humEl.style.fontSize = '1.6rem';
+      humEl.innerText = `${latest.humidity} %`;
 
       const tempPct = Math.max(5, Math.min(100, ((latest.temperature + 10) / 45) * 100));
       const tempMeter = document.getElementById('tempMeter');
@@ -947,71 +1115,74 @@
       humMeter.style.width = `${humPct}%`;
       humMeter.style.background = latest.humidity > config.maxHum ? '#f59e0b' : '#10b981';
 
+      // Dew Point with real Low / Medium / High risk status
       const dp = calcDewPoint(latest.temperature, latest.humidity);
-      document.getElementById('dewVal').innerText = `${dp} °C`;
-      document.getElementById('dewSub').innerText = (latest.temperature - dp < 2) ? "Condensation Risk" : "Dry & Safe";
+      const spread = latest.temperature - dp;
+      const dewEl = document.getElementById('dewVal');
+      const dewPill = document.getElementById('dewRiskPill');
+      const dewSub = document.getElementById('dewSub');
+      dewEl.style.fontSize = '1.6rem';
+      dewEl.innerText = `${dp} °C`;
+      if (spread < 2) {
+        dewPill.className = 'pill hot'; dewPill.innerText = '✕ High';
+        dewSub.innerText = 'High condensation risk';
+      } else if (spread < 5) {
+        dewPill.className = 'pill hum'; dewPill.innerText = '⚠ Medium';
+        dewSub.innerText = 'Moderate moisture risk';
+      } else {
+        dewPill.className = 'pill ok'; dewPill.innerText = '✓ Low';
+        dewSub.innerText = 'Low risk — Dry & safe';
+      }
 
-      // Smart Battery Health & Remaining Percentage
+      // Clean Power / Battery Card (no confusing "USB / --")
       const batVal = document.getElementById('batVal');
       const batSub = document.getElementById('batSub');
       const batBar = document.getElementById('batBar');
+      const batMeterWrap = document.getElementById('batMeterWrap');
       const batPill = document.getElementById('batHealthPill');
 
       let batPct = null;
       if (typeof latest.battery === 'number') {
         batPct = Math.max(0, Math.min(100, Math.round(latest.battery)));
       } else if (typeof latest.voltage === 'number') {
-        // Auto-calculate % from Li-ion 3.3V (0%) to 4.2V (100%)
         batPct = Math.max(0, Math.min(100, Math.round(((latest.voltage - 3.3) / (4.2 - 3.3)) * 100)));
       }
 
       if (batPct !== null) {
+        batVal.className = 'val bat';
+        batVal.style.fontSize = '1.6rem';
         batVal.innerText = `${batPct} %`;
+        batMeterWrap.style.display = 'block';
         batBar.style.width = `${batPct}%`;
         const vTxt = typeof latest.voltage === 'number' ? ` • ${latest.voltage.toFixed(2)}V` : '';
         if (batPct > 60) {
           batBar.style.background = '#10b981';
-          batPill.className = 'pill ok'; batPill.innerText = 'Healthy';
-          batSub.innerText = `Good Backup${vTxt}`;
+          batPill.className = 'pill ok'; batPill.innerText = '✓ Healthy';
+          batSub.innerText = `Good backup${vTxt}`;
         } else if (batPct > 25) {
           batBar.style.background = '#f59e0b';
-          batPill.className = 'pill hum'; batPill.innerText = 'Moderate';
-          batSub.innerText = `Charge Soon${vTxt}`;
+          batPill.className = 'pill hum'; batPill.innerText = '⚠ Moderate';
+          batSub.innerText = `Charge soon${vTxt}`;
         } else {
           batBar.style.background = '#ef4444';
-          batPill.className = 'pill hot'; batPill.innerText = 'Critical';
-          batSub.innerText = `Low Battery${vTxt}`;
+          batPill.className = 'pill hot'; batPill.innerText = '✕ Low';
+          batSub.innerText = `Critical battery${vTxt}`;
         }
       } else {
-        batVal.innerText = "N/A";
-        batBar.style.width = "100%";
-        batBar.style.background = "var(--surface-2)";
-        batPill.className = 'pill cold'; batPill.innerText = 'USB Power';
-        batSub.innerText = "No Battery Sensor Connected";
+        batVal.className = 'val bat-usb';
+        batVal.style.fontSize = '1.05rem';
+        batVal.innerText = "Powered by USB";
+        batMeterWrap.style.display = 'none';
+        batPill.className = 'pill neutral'; batPill.innerText = 'External';
+        batSub.innerText = "Battery sensor not connected";
       }
 
       if (typeof latest.lat === 'number' && typeof latest.lng === 'number') {
         updateMap(latest.lat, latest.lng, "Live GPS Sensor");
       }
 
-      const statusBox = document.getElementById('statusBox');
-      let alertTriggered = false;
-      if (latest.temperature > config.maxTemp) {
-        statusBox.className = "status alert"; statusBox.innerText = `OVERHEAT ALERT — ${latest.temperature}°C (Max ${config.maxTemp}°C)`; alertTriggered = true;
-      } else if (latest.temperature < config.minTemp) {
-        statusBox.className = "status alert"; statusBox.innerText = `FREEZING ALERT — ${latest.temperature}°C (Min ${config.minTemp}°C)`; alertTriggered = true;
-      } else if (latest.humidity > config.maxHum) {
-        statusBox.className = "status warn"; statusBox.innerText = `HIGH HUMIDITY — ${latest.humidity}% (Max ${config.maxHum}%)`;
-      } else {
-        statusBox.className = "status normal"; statusBox.innerText = "Cooling Normal — All Parameters Safe";
-      }
-
-      if (alertTriggered && lastAlertTime !== latest.timestamp) {
-        if (soundEnabled) playBeep();
-        if (config.vibe && navigator.vibrate) navigator.vibrate([250, 100, 250]);
-        lastAlertTime = latest.timestamp;
-      }
-
+      updateLastBreachSummary(entries);
+      evaluateFreshnessAndBanner();
       renderFilteredViews();
     }
 
@@ -1031,8 +1202,7 @@
         if (!unsubscribeDb) {
           unsubscribeDb = onValue(query(ref(db, 'logistics/truck_01'), limitToLast(2000)), (snap) => {
             const data = snap.val();
-            if (!data) return;
-            allEntries = Object.values(data);
+            allEntries = data ? Object.values(data) : [];
             renderAll(allEntries);
           });
         }
