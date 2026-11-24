@@ -8,12 +8,10 @@
   <meta id="themeColorMeta" name="theme-color" content="#090d16">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <!-- Clean Enterprise Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Chart.js & Leaflet Map -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -54,18 +52,9 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif !important; }
     body { background: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; transition: background 0.25s, color 0.25s; }
 
-    /* Splash Loader */
-    #authLoader {
-      min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--muted); font-size: 0.85rem;
-    }
-    .spinner {
-      width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Login View */
+    /* Login View (Opens Immediately - No Blocking Loader) */
     #loginView {
-      min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 20px;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
     }
     .login-card {
       width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border);
@@ -89,7 +78,6 @@
       background: none; border: none; color: var(--muted); font-size: 0.75rem; font-weight: 600; cursor: pointer; padding: 4px 6px;
     }
 
-    /* Main App Shell */
     #appView { display: none; padding-bottom: 82px; }
 
     header {
@@ -128,7 +116,6 @@
     .tab-view.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Status Banner */
     .status {
       display: flex; align-items: center; justify-content: center; gap: 8px;
       padding: 11px 14px; border-radius: 10px; font-weight: 600; margin-bottom: 14px; font-size: 0.82rem;
@@ -138,7 +125,6 @@
     .alert { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.4); animation: pulse 1.2s infinite; }
     @keyframes pulse { 50% { opacity: 0.65; } }
 
-    /* Cards */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
     .card {
@@ -156,7 +142,6 @@
     .bat-bar-bg { width: 100%; height: 5px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 8px; }
     .bat-bar { height: 100%; width: 0%; background: var(--green); border-radius: 99px; transition: width 0.4s; }
 
-    /* Boxes & Chart */
     .box { background: var(--surface); padding: 14px; border-radius: 14px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
     .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
     .box-header h3 { margin: 0; font-size: 0.88rem; font-weight: 600; color: var(--text); }
@@ -169,7 +154,6 @@
     .chart-wrap { position: relative; height: 210px; width: 100%; }
     .time { text-align: center; color: var(--muted); font-size: 0.74rem; margin-bottom: 14px; font-weight: 500; }
 
-    /* Map */
     #map { height: 340px; width: 100%; border-radius: 12px; border: 1px solid var(--border); z-index: 1; }
     .leaflet-control-attribution { display: none !important; }
     body:not([data-theme="light"]) .leaflet-tile-pane {
@@ -177,7 +161,6 @@
     }
     .map-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; gap: 8px; }
 
-    /* Table */
     table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
     th, td { padding: 10px 6px; text-align: left; border-bottom: 1px solid var(--border); }
     th { color: var(--muted); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; }
@@ -187,7 +170,6 @@
     .pill.cold { background: rgba(56,189,248,0.15); color: var(--blue); }
     .pill.hum { background: rgba(245,158,11,0.15); color: var(--amber); }
 
-    /* Inputs & Settings */
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
     .field input {
@@ -197,7 +179,6 @@
     .field input:focus { border-color: var(--blue); }
     .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
 
-    /* Bottom Navigation */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
       background: var(--header-bg); backdrop-filter: blur(12px);
@@ -215,13 +196,7 @@
 </head>
 <body>
 
-  <!-- 1. AUTH CHECK SPLASH -->
-  <div id="authLoader">
-    <div class="spinner"></div>
-    <span>Verifying session...</span>
-  </div>
-
-  <!-- 2. LOGIN SCREEN -->
+  <!-- 1. LOGIN SCREEN -->
   <div id="loginView">
     <div class="login-card">
       <div class="login-head">
@@ -251,7 +226,7 @@
     </div>
   </div>
 
-  <!-- 3. MAIN DASHBOARD -->
+  <!-- 2. MAIN DASHBOARD -->
   <div id="appView">
     <header>
       <div class="brand">
@@ -276,7 +251,6 @@
     </header>
 
     <div class="container">
-      <!-- TAB 1: LIVE -->
       <section id="tab-live" class="tab-view active">
         <div id="statusBox" class="status normal">Connecting to Firebase...</div>
 
@@ -335,7 +309,6 @@
         </div>
       </section>
 
-      <!-- TAB 2: LIVE MAP -->
       <section id="tab-map" class="tab-view">
         <div class="box">
           <div class="box-header">
@@ -350,7 +323,6 @@
         </div>
       </section>
 
-      <!-- TAB 3: ANALYTICS -->
       <section id="tab-logs" class="tab-view">
         <div class="grid-3">
           <div class="card"><h2>Min</h2><div id="statMin" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
@@ -386,7 +358,6 @@
         </div>
       </section>
 
-      <!-- TAB 4: SETTINGS -->
       <section id="tab-settings" class="tab-view">
         <div class="box">
           <div class="box-header"><h3>Alert Thresholds</h3></div>
@@ -413,7 +384,6 @@
       </section>
     </div>
 
-    <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
       <button class="nav-item active" data-tab="tab-live">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -436,10 +406,12 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { initializeAuth, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getDatabase, ref, query, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js?v=4').then(r => r.update());
+    }
 
     const firebaseConfig = {
       apiKey: "AIzaSyAfQQBY5tpLM4CitpWdOacscmXVviRYQnQ",
@@ -452,12 +424,13 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = initializeAuth(app, { persistence: browserLocalPersistence });
+    const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Theme (Dark / Light)
+    // Theme
     const sunSVG = `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`;
     const moonSVG = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+    let chart = null;
 
     function applyTheme(theme) {
       const isLight = theme === 'light';
@@ -466,7 +439,7 @@
       localStorage.setItem('cc_theme', theme);
       document.getElementById('themeColorMeta').setAttribute('content', isLight ? '#f1f5f9' : '#090d16');
       document.getElementById('themeIcon').innerHTML = isLight ? moonSVG : sunSVG;
-      if (typeof chart !== 'undefined') {
+      if (chart) {
         chart.options.scales.y.grid.color = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.05)';
         chart.update();
       }
@@ -474,11 +447,10 @@
     applyTheme(localStorage.getItem('cc_theme') || 'dark');
 
     document.getElementById('themeBtn').addEventListener('click', () => {
-      const next = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-      applyTheme(next);
+      applyTheme(document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
     });
 
-    // Password Show/Hide
+    // Password Toggle
     const loginPass = document.getElementById('loginPass');
     const togglePassBtn = document.getElementById('togglePassBtn');
     togglePassBtn.addEventListener('click', () => {
@@ -487,7 +459,7 @@
       togglePassBtn.innerText = hidden ? 'Hide' : 'Show';
     });
 
-    // Firebase Auth Login
+    // Login Form
     const loginForm = document.getElementById('loginForm');
     const loginErr = document.getElementById('loginErr');
     const loginSubmitBtn = document.getElementById('loginSubmitBtn');
@@ -549,20 +521,23 @@
       if (currentEntries.length) renderAll(currentEntries);
     });
 
-    // Leaflet Map (Attribution Disabled)
-    const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([31.3916, 74.2414], 13);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-
-    const truckIcon = L.divIcon({
-      className: 'custom-pin',
-      html: `<div style="width:18px;height:18px;background:#0284c7;border:3px solid #fff;border-radius:50%;box-shadow:0 0 14px #38bdf8;"></div>`,
-      iconSize: [18, 18], iconAnchor: [9, 9]
-    });
-    const marker = L.marker([31.3916, 74.2414], { icon: truckIcon }).addTo(map).bindPopup("<b>Truck 01</b><br>Cold Chain Unit");
+    // Safe Map Setup
+    let map = null, marker = null;
+    try {
+      if (window.L) {
+        map = L.map('map', { zoomControl: false, attributionControl: false }).setView([31.3916, 74.2414], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+        const truckIcon = L.divIcon({
+          className: 'custom-pin',
+          html: `<div style="width:18px;height:18px;background:#0284c7;border:3px solid #fff;border-radius:50%;box-shadow:0 0 14px #38bdf8;"></div>`,
+          iconSize: [18, 18], iconAnchor: [9, 9]
+        });
+        marker = L.marker([31.3916, 74.2414], { icon: truckIcon }).addTo(map);
+      }
+    } catch (e) {}
 
     function updateMap(lat, lng, sourceLabel) {
-      marker.setLatLng([lat, lng]);
-      map.panTo([lat, lng]);
+      if (marker && map) { marker.setLatLng([lat, lng]); map.panTo([lat, lng]); }
       document.getElementById('gpsCoords').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
       const badge = document.getElementById('gpsSource');
       badge.innerText = sourceLabel;
@@ -577,50 +552,51 @@
       );
     });
 
-    // Bottom Navigation
+    // Navigation
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById(btn.dataset.tab).classList.add('active');
-        if (btn.dataset.tab === 'tab-map') setTimeout(() => map.invalidateSize(), 150);
+        if (btn.dataset.tab === 'tab-map' && map) setTimeout(() => map.invalidateSize(), 150);
       });
     });
 
-    // Smooth Gradient Chart
-    let activeMetric = 'temp';
-    const ctx = document.getElementById('tempChart').getContext('2d');
-    const blueGrad = ctx.createLinearGradient(0, 0, 0, 200);
-    blueGrad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
-    blueGrad.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
+    // Safe Chart Setup
+    let activeMetric = 'temp', blueGrad = null, greenGrad = null;
+    try {
+      if (window.Chart) {
+        const ctx = document.getElementById('tempChart').getContext('2d');
+        blueGrad = ctx.createLinearGradient(0, 0, 0, 200);
+        blueGrad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+        blueGrad.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
 
-    const greenGrad = ctx.createLinearGradient(0, 0, 0, 200);
-    greenGrad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
-    greenGrad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+        greenGrad = ctx.createLinearGradient(0, 0, 0, 200);
+        greenGrad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+        greenGrad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
 
-    const chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [{
-          data: [], borderColor: '#38bdf8', backgroundColor: blueGrad,
-          borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.4, fill: true
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { display: false },
-          tooltip: { backgroundColor: '#1e293b', titleColor: '#94a3b8', bodyColor: '#f8fafc', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, padding: 10 }
-        },
-        scales: {
-          x: { grid: { display: false }, ticks: { color: '#64748b', maxTicksLimit: 5, font: { size: 10 } } },
-          y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4, 4] }, ticks: { color: '#64748b', font: { size: 10 } } }
-        }
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: [],
+            datasets: [{
+              data: [], borderColor: '#38bdf8', backgroundColor: blueGrad,
+              borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.4, fill: true
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#64748b', maxTicksLimit: 5, font: { size: 10 } } },
+              y: { grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4, 4] }, ticks: { color: '#64748b', font: { size: 10 } } }
+            }
+          }
+        });
       }
-    });
+    } catch (e) {}
 
     document.querySelectorAll('.seg-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -632,7 +608,7 @@
     });
 
     function updateChart(entries) {
-      if (!entries.length) return;
+      if (!chart || !entries.length) return;
       const recent = entries.slice(-20);
       chart.data.labels = recent.map(e => (e.timestamp.split(' ')[1] || e.timestamp).slice(0, 8));
       const ds = chart.data.datasets[0];
@@ -646,7 +622,6 @@
       chart.update();
     }
 
-    // Audio, Filters & CSV
     let soundEnabled = false, onlyBreaches = false, lastAlertTime = "", lastDataTimestamp = null, currentEntries = [];
     function playBeep() {
       const a = new (window.AudioContext || window.webkitAudioContext)();
@@ -766,25 +741,13 @@
       renderTable(entries);
     }
 
-    // Auth State Observer with 3s Fallback
     let unsubscribeDb = null;
-    let authResolved = false;
-
-    setTimeout(() => {
-      if (!authResolved) {
-        document.getElementById('authLoader').style.display = 'none';
-        document.getElementById('loginView').style.display = 'flex';
-      }
-    }, 3000);
-
     onAuthStateChanged(auth, (user) => {
-      authResolved = true;
-      document.getElementById('authLoader').style.display = 'none';
       if (user) {
         document.getElementById('loginView').style.display = 'none';
         document.getElementById('appView').style.display = 'block';
         document.getElementById('userEmailLbl').innerText = user.email;
-        setTimeout(() => map.invalidateSize(), 200);
+        if (map) setTimeout(() => map.invalidateSize(), 200);
 
         if (!unsubscribeDb) {
           unsubscribeDb = onValue(query(ref(db, 'logistics/truck_01'), limitToLast(50)), (snap) => {
