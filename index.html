@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ColdChain Pro</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#090d16">
+  <meta id="themeColorMeta" name="theme-color" content="#090d16">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <!-- Professional Font (Overrides Phone Font) -->
+  <!-- Clean Enterprise Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -23,6 +23,7 @@
       --bg: #090d16;
       --surface: #111827;
       --surface-2: #1a2335;
+      --header-bg: rgba(17, 24, 39, 0.88);
       --border: rgba(255, 255, 255, 0.08);
       --text: #f8fafc;
       --muted: #94a3b8;
@@ -31,22 +32,70 @@
       --red: #ef4444;
       --amber: #f59e0b;
       --purple: #a78bfa;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif !important; }
-    body { background: var(--bg); color: var(--text); margin: 0; padding: 0 0 82px 0; -webkit-font-smoothing: antialiased; }
 
-    /* Header */
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-2: #e2e8f0;
+      --header-bg: rgba(255, 255, 255, 0.9);
+      --border: rgba(15, 23, 42, 0.09);
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #0284c7;
+      --green: #059669;
+      --red: #dc2626;
+      --amber: #d97706;
+      --purple: #7c3aed;
+      --shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif !important; }
+    body { background: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; transition: background 0.25s, color 0.25s; }
+
+    /* Splash Loader */
+    #authLoader {
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--muted); font-size: 0.85rem;
+    }
+    .spinner {
+      width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Login View */
+    #loginView {
+      min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .login-card {
+      width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 28px 24px; box-shadow: var(--shadow);
+    }
+    .login-head { text-align: center; margin-bottom: 24px; }
+    .login-logo {
+      width: 48px; height: 48px; border-radius: 14px; margin: 0 auto 12px auto;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      display: flex; align-items: center; justify-content: center; color: #fff;
+    }
+    .login-head h1 { margin: 0; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.3px; }
+    .login-head p { margin: 6px 0 0 0; font-size: 0.8rem; color: var(--muted); }
+    .login-err {
+      display: none; background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.35);
+      color: var(--red); padding: 10px 12px; border-radius: 10px; font-size: 0.78rem; margin-bottom: 14px; font-weight: 500;
+    }
+    .pass-wrap { position: relative; }
+    .pass-toggle {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--muted); font-size: 0.75rem; font-weight: 600; cursor: pointer; padding: 4px 6px;
+    }
+
+    /* Main App Shell */
+    #appView { display: none; padding-bottom: 82px; }
+
     header {
-      background: rgba(17, 24, 39, 0.85);
-      backdrop-filter: blur(12px);
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
+      background: var(--header-bg); backdrop-filter: blur(12px);
+      padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000;
     }
     .brand { display: flex; align-items: center; gap: 10px; }
     .brand-icon {
@@ -54,19 +103,25 @@
       background: linear-gradient(135deg, #0284c7, #38bdf8);
       display: flex; align-items: center; justify-content: center; color: #fff;
     }
-    .brand h1 { font-size: 0.98rem; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
-    .conn-badge { font-size: 0.72rem; margin-top: 2px; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 500; }
+    .brand h1 { font-size: 0.96rem; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
+    .conn-badge { font-size: 0.7rem; margin-top: 2px; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 500; }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: #64748b; }
     .dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); }
     .dot.offline { background: var(--red); }
 
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .icon-btn {
+      background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
+      width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    }
     .btn {
       background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
-      padding: 7px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+      padding: 7px 11px; border-radius: 8px; font-size: 0.76rem; font-weight: 600;
       cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
     }
     .btn.active { background: #0284c7; border-color: #38bdf8; color: #fff; }
-    .btn.primary { background: linear-gradient(135deg, #0284c7, #0ea5e9); border: none; width: 100%; justify-content: center; padding: 12px; font-size: 0.88rem; margin-top: 8px; }
+    .btn.primary { background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #fff; border: none; width: 100%; justify-content: center; padding: 12px; font-size: 0.88rem; margin-top: 6px; }
+    .btn.danger { background: rgba(239, 68, 68, 0.14); color: var(--red); border-color: rgba(239, 68, 68, 0.3); width: 100%; justify-content: center; padding: 11px; font-size: 0.85rem; }
 
     .container { max-width: 700px; margin: auto; padding: 14px; }
     .tab-view { display: none; animation: fadeIn 0.2s ease; }
@@ -76,33 +131,33 @@
     /* Status Banner */
     .status {
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 11px 14px; border-radius: 10px; font-weight: 600; margin-bottom: 14px; font-size: 0.84rem;
+      padding: 11px 14px; border-radius: 10px; font-weight: 600; margin-bottom: 14px; font-size: 0.82rem;
     }
-    .normal { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.28); }
-    .warn { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.28); }
-    .alert { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); animation: pulse 1.2s infinite; }
+    .normal { background: rgba(16, 185, 129, 0.13); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.28); }
+    .warn { background: rgba(245, 158, 11, 0.13); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.28); }
+    .alert { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.4); animation: pulse 1.2s infinite; }
     @keyframes pulse { 50% { opacity: 0.65; } }
 
     /* Cards */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
     .card {
-      background: var(--surface); padding: 14px; border-radius: 14px;
+      background: var(--surface); padding: 14px; border-radius: 14px; box-shadow: var(--shadow);
       border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;
     }
     .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .card h2 { margin: 0; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
-    .card .val { font-size: 1.65rem; font-weight: 700; letter-spacing: -0.5px; color: var(--blue); }
+    .card h2 { margin: 0; font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
+    .card .val { font-size: 1.62rem; font-weight: 700; letter-spacing: -0.5px; color: var(--blue); }
     .card .val.hum { color: var(--green); }
     .card .val.bat { color: var(--purple); }
     .card .val.dew { color: var(--amber); }
-    .card .sub { font-size: 0.72rem; color: var(--muted); margin-top: 6px; font-weight: 500; }
+    .card .sub { font-size: 0.71rem; color: var(--muted); margin-top: 6px; font-weight: 500; }
 
-    .bat-bar-bg { width: 100%; height: 5px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+    .bat-bar-bg { width: 100%; height: 5px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 8px; }
     .bat-bar { height: 100%; width: 0%; background: var(--green); border-radius: 99px; transition: width 0.4s; }
 
     /* Boxes & Chart */
-    .box { background: var(--surface); padding: 14px; border-radius: 14px; margin-bottom: 14px; border: 1px solid var(--border); }
+    .box { background: var(--surface); padding: 14px; border-radius: 14px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
     .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
     .box-header h3 { margin: 0; font-size: 0.88rem; font-weight: 600; color: var(--text); }
     .seg-ctrl { display: inline-flex; background: var(--bg); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
@@ -110,33 +165,34 @@
       background: transparent; border: none; color: var(--muted); font-size: 0.72rem; font-weight: 600;
       padding: 5px 10px; border-radius: 6px; cursor: pointer;
     }
-    .seg-btn.active { background: var(--surface-2); color: var(--text); }
+    .seg-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
     .chart-wrap { position: relative; height: 210px; width: 100%; }
-    .time { text-align: center; color: var(--muted); font-size: 0.75rem; margin-bottom: 14px; font-weight: 500; }
+    .time { text-align: center; color: var(--muted); font-size: 0.74rem; margin-bottom: 14px; font-weight: 500; }
 
     /* Map */
     #map { height: 340px; width: 100%; border-radius: 12px; border: 1px solid var(--border); z-index: 1; }
-    .leaflet-tile-pane { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }    
     .leaflet-control-attribution { display: none !important; }
-    
+    body:not([data-theme="light"]) .leaflet-tile-pane {
+      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    }
     .map-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; gap: 8px; }
 
     /* Table */
     table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
     th, td { padding: 10px 6px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; }
     .pill { padding: 3px 8px; border-radius: 99px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
-    .pill.ok { background: rgba(16,185,129,0.15); color: #34d399; }
-    .pill.hot { background: rgba(239,68,68,0.15); color: #f87171; }
-    .pill.cold { background: rgba(56,189,248,0.15); color: #38bdf8; }
-    .pill.hum { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .pill.ok { background: rgba(16,185,129,0.15); color: var(--green); }
+    .pill.hot { background: rgba(239,68,68,0.15); color: var(--red); }
+    .pill.cold { background: rgba(56,189,248,0.15); color: var(--blue); }
+    .pill.hum { background: rgba(245,158,11,0.15); color: var(--amber); }
 
-    /* Settings */
+    /* Inputs & Settings */
     .field { margin-bottom: 12px; }
-    .field label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+    .field label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
     .field input {
-      width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--bg); color: var(--text); font-size: 0.9rem; outline: none;
+      width: 100%; padding: 11px 12px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-size: 0.88rem; outline: none;
     }
     .field input:focus { border-color: var(--blue); }
     .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
@@ -144,7 +200,7 @@
     /* Bottom Navigation */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(17, 24, 39, 0.94); backdrop-filter: blur(12px);
+      background: var(--header-bg); backdrop-filter: blur(12px);
       border-top: 1px solid var(--border);
       display: grid; grid-template-columns: repeat(4, 1fr);
       padding: 8px 0 10px 0; z-index: 1000;
@@ -158,187 +214,303 @@
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <div class="brand-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
-      </div>
-      <div>
-        <h1>ColdChain Pro</h1>
-        <div class="conn-badge"><span id="connDot" class="dot"></span><span id="connText">Connecting...</span></div>
-      </div>
-    </div>
-    <button id="soundBtn" class="btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-      <span>Muted</span>
-    </button>
-  </header>
 
-  <div class="container">
-    <!-- TAB 1: LIVE -->
-    <section id="tab-live" class="tab-view active">
-      <div id="statusBox" class="status normal">Connecting to Firebase...</div>
-
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-top">
-            <h2>Temperature</h2>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
-          </div>
-          <div id="tempVal" class="val">-- °C</div>
-          <div id="tempRangeTxt" class="sub">Safe: 2°C – 8°C</div>
-        </div>
-
-        <div class="card">
-          <div class="card-top">
-            <h2>Humidity</h2>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-          </div>
-          <div id="humVal" class="val hum">-- %</div>
-          <div id="humRangeTxt" class="sub">Limit: &lt; 75%</div>
-        </div>
-
-        <div class="card">
-          <div class="card-top">
-            <h2>Battery</h2>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg>
-          </div>
-          <div id="batVal" class="val bat">-- %</div>
-          <div id="batSub" class="sub">Awaiting ESP32 ADC</div>
-          <div class="bat-bar-bg"><div id="batBar" class="bat-bar"></div></div>
-        </div>
-
-        <div class="card">
-          <div class="card-top">
-            <h2>Dew Point</h2>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
-          </div>
-          <div id="dewVal" class="val dew">-- °C</div>
-          <div id="dewSub" class="sub">Condensation Risk</div>
-        </div>
-      </div>
-
-      <div id="lastUpdate" class="time">Last Update: --</div>
-
-      <div class="box">
-        <div class="box-header">
-          <h3>Telemetry Trend</h3>
-          <div class="seg-ctrl">
-            <button class="seg-btn active" data-metric="temp">Temp</button>
-            <button class="seg-btn" data-metric="hum">Humidity</button>
-          </div>
-        </div>
-        <div class="chart-wrap">
-          <canvas id="tempChart"></canvas>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 2: LIVE MAP -->
-    <section id="tab-map" class="tab-view">
-      <div class="box">
-        <div class="box-header">
-          <h3>Truck 01 — Live GPS</h3>
-          <button id="phoneGpsBtn" class="btn">Use Phone GPS</button>
-        </div>
-        <div id="map"></div>
-        <div class="map-meta">
-          <span id="gpsCoords">Lat: 31.3916, Lng: 74.2414</span>
-          <span id="gpsSource" class="pill cold">Default (Lahore)</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 3: ANALYTICS -->
-    <section id="tab-logs" class="tab-view">
-      <div class="grid-3">
-        <div class="card"><h2>Min</h2><div id="statMin" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
-        <div class="card"><h2>Avg</h2><div id="statAvg" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
-        <div class="card"><h2>Max</h2><div id="statMax" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
-      </div>
-
-      <div class="grid-2">
-        <div class="card">
-          <h2>Compliance</h2>
-          <div id="statComp" class="val hum" style="font-size:1.5rem; margin-top:4px;">-- %</div>
-          <div class="sub">Safe range rate</div>
-        </div>
-        <div class="card">
-          <h2>Breaches</h2>
-          <div id="statBreach" class="val" style="font-size:1.5rem; color:#f87171; margin-top:4px;">0</div>
-          <div class="sub">Last 50 logs</div>
-        </div>
-      </div>
-
-      <div class="box">
-        <div class="box-header">
-          <h3>Recent Logs</h3>
-          <div style="display:flex; gap:6px;">
-            <button id="filterBreachBtn" class="btn">Breaches</button>
-            <button id="csvBtn" class="btn">Export CSV</button>
-          </div>
-        </div>
-        <table>
-          <thead><tr><th>Time</th><th>Temp</th><th>Hum</th><th>Status</th></tr></thead>
-          <tbody id="logTable"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- TAB 4: SETTINGS -->
-    <section id="tab-settings" class="tab-view">
-      <div class="box">
-        <div class="box-header"><h3>Alert Thresholds</h3></div>
-        <div class="field"><label>Min Safe Temp (°C)</label><input type="number" step="0.5" id="inpMinTemp"></div>
-        <div class="field"><label>Max Safe Temp (°C)</label><input type="number" step="0.5" id="inpMaxTemp"></div>
-        <div class="field"><label>Max Safe Humidity (%)</label><input type="number" step="1" id="inpMaxHum"></div>
-        <div class="toggle-row">
-          <span>Vibrate on Alert</span>
-          <input type="checkbox" id="inpVibe" style="width:18px; height:18px;">
-        </div>
-        <button id="saveSettingsBtn" class="btn primary">Save Thresholds</button>
-        <div id="saveMsg" class="time" style="margin:8px 0 0 0; color:#34d399;"></div>
-      </div>
-
-      <div class="box">
-        <div class="box-header"><h3>Architecture</h3></div>
-        <p style="font-size:0.8rem; color:#94a3b8; margin:0; line-height:1.6;">
-          <strong>Vehicle:</strong> Truck 01 (ESP32 + SHT31 + DS3231)<br>
-          <strong>Stack:</strong> Micro-ROS → ROS 2 Humble → Firebase RTDB<br>
-          <strong>Node Path:</strong> <code>logistics/truck_01</code>
-        </p>
-      </div>
-    </section>
+  <!-- 1. AUTH CHECK SPLASH -->
+  <div id="authLoader">
+    <div class="spinner"></div>
+    <span>Verifying session...</span>
   </div>
 
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" data-tab="tab-live">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      <span>Live</span>
-    </button>
-    <button class="nav-item" data-tab="tab-map">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span>Map</span>
-    </button>
-    <button class="nav-item" data-tab="tab-logs">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span>Analytics</span>
-    </button>
-    <button class="nav-item" data-tab="tab-settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/></svg>
-      <span>Settings</span>
-    </button>
-  </nav>
+  <!-- 2. LOGIN SCREEN -->
+  <div id="loginView">
+    <div class="login-card">
+      <div class="login-head">
+        <div class="login-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+        </div>
+        <h1>ColdChain Pro</h1>
+        <p>Sign in to access live fleet telemetry</p>
+      </div>
+
+      <div id="loginErr" class="login-err"></div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label>Operator Email</label>
+          <input type="email" id="loginEmail" placeholder="admin@coldchain.com" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <div class="pass-wrap">
+            <input type="password" id="loginPass" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" id="togglePassBtn" class="pass-toggle">Show</button>
+          </div>
+        </div>
+        <button type="submit" id="loginSubmitBtn" class="btn primary">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. MAIN DASHBOARD -->
+  <div id="appView">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+        </div>
+        <div>
+          <h1>ColdChain Pro</h1>
+          <div class="conn-badge"><span id="connDot" class="dot"></span><span id="connText">Connecting...</span></div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="themeBtn" class="icon-btn" title="Toggle Dark/Light Mode">
+          <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <button id="soundBtn" class="btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          <span>Muted</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- TAB 1: LIVE -->
+      <section id="tab-live" class="tab-view active">
+        <div id="statusBox" class="status normal">Connecting to Firebase...</div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-top">
+              <h2>Temperature</h2>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+            </div>
+            <div id="tempVal" class="val">-- °C</div>
+            <div id="tempRangeTxt" class="sub">Safe: 2°C – 8°C</div>
+          </div>
+
+          <div class="card">
+            <div class="card-top">
+              <h2>Humidity</h2>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+            </div>
+            <div id="humVal" class="val hum">-- %</div>
+            <div id="humRangeTxt" class="sub">Limit: &lt; 75%</div>
+          </div>
+
+          <div class="card">
+            <div class="card-top">
+              <h2>Battery</h2>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg>
+            </div>
+            <div id="batVal" class="val bat">-- %</div>
+            <div id="batSub" class="sub">Awaiting ESP32 ADC</div>
+            <div class="bat-bar-bg"><div id="batBar" class="bat-bar"></div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-top">
+              <h2>Dew Point</h2>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
+            </div>
+            <div id="dewVal" class="val dew">-- °C</div>
+            <div id="dewSub" class="sub">Condensation Risk</div>
+          </div>
+        </div>
+
+        <div id="lastUpdate" class="time">Last Update: --</div>
+
+        <div class="box">
+          <div class="box-header">
+            <h3>Telemetry Trend</h3>
+            <div class="seg-ctrl">
+              <button class="seg-btn active" data-metric="temp">Temp</button>
+              <button class="seg-btn" data-metric="hum">Humidity</button>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="tempChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: LIVE MAP -->
+      <section id="tab-map" class="tab-view">
+        <div class="box">
+          <div class="box-header">
+            <h3>Truck 01 — Live GPS</h3>
+            <button id="phoneGpsBtn" class="btn">Use Phone GPS</button>
+          </div>
+          <div id="map"></div>
+          <div class="map-meta">
+            <span id="gpsCoords">Lat: 31.3916, Lng: 74.2414</span>
+            <span id="gpsSource" class="pill cold">Default (Lahore)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: ANALYTICS -->
+      <section id="tab-logs" class="tab-view">
+        <div class="grid-3">
+          <div class="card"><h2>Min</h2><div id="statMin" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
+          <div class="card"><h2>Avg</h2><div id="statAvg" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
+          <div class="card"><h2>Max</h2><div id="statMax" class="val" style="font-size:1.2rem; margin-top:4px;">--</div></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h2>Compliance</h2>
+            <div id="statComp" class="val hum" style="font-size:1.5rem; margin-top:4px;">-- %</div>
+            <div class="sub">Safe range rate</div>
+          </div>
+          <div class="card">
+            <h2>Breaches</h2>
+            <div id="statBreach" class="val" style="font-size:1.5rem; color:var(--red); margin-top:4px;">0</div>
+            <div class="sub">Last 50 logs</div>
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="box-header">
+            <h3>Recent Logs</h3>
+            <div style="display:flex; gap:6px;">
+              <button id="filterBreachBtn" class="btn">Breaches</button>
+              <button id="csvBtn" class="btn">Export CSV</button>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Time</th><th>Temp</th><th>Hum</th><th>Status</th></tr></thead>
+            <tbody id="logTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 4: SETTINGS -->
+      <section id="tab-settings" class="tab-view">
+        <div class="box">
+          <div class="box-header"><h3>Alert Thresholds</h3></div>
+          <div class="field"><label>Min Safe Temp (°C)</label><input type="number" step="0.5" id="inpMinTemp"></div>
+          <div class="field"><label>Max Safe Temp (°C)</label><input type="number" step="0.5" id="inpMaxTemp"></div>
+          <div class="field"><label>Max Safe Humidity (%)</label><input type="number" step="1" id="inpMaxHum"></div>
+          <div class="toggle-row">
+            <span>Vibrate on Alert</span>
+            <input type="checkbox" id="inpVibe" style="width:18px; height:18px;">
+          </div>
+          <button id="saveSettingsBtn" class="btn primary">Save Thresholds</button>
+          <div id="saveMsg" class="time" style="margin:8px 0 0 0; color:var(--green);"></div>
+        </div>
+
+        <div class="box">
+          <div class="box-header"><h3>Operator Session</h3></div>
+          <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px 0; line-height:1.6;">
+            <strong>Signed in as:</strong> <span id="userEmailLbl" style="color:var(--text);">--</span><br>
+            <strong>Vehicle:</strong> Truck 01 (ESP32 + SHT31 + DS3231)<br>
+            <strong>Pipeline:</strong> Micro-ROS → ROS 2 Humble → Firebase RTDB
+          </p>
+          <button id="logoutBtn" class="btn danger">Sign Out</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="tab-live">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span>Live</span>
+      </button>
+      <button class="nav-item" data-tab="tab-map">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>Map</span>
+      </button>
+      <button class="nav-item" data-tab="tab-logs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Analytics</span>
+      </button>
+      <button class="nav-item" data-tab="tab-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/></svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getDatabase, ref, query, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 
-    const app = initializeApp({ databaseURL: "https://coldchain-logistics-cc3d5-default-rtdb.firebaseio.com/" });
+    const firebaseConfig = {
+      apiKey: "AIzaSyAfQQBY5tpLM4CitpWdOacscmXVviRYQnQ",
+      authDomain: "coldchain-logistics-cc3d5.firebaseapp.com",
+      databaseURL: "https://coldchain-logistics-cc3d5-default-rtdb.firebaseio.com",
+      projectId: "coldchain-logistics-cc3d5",
+      storageBucket: "coldchain-logistics-cc3d5.firebasestorage.app",
+      messagingSenderId: "454014845195",
+      appId: "1:454014845195:web:eed7d411c8c0f8ca25e20e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getDatabase(app);
+
+    // Theme (Dark / Light)
+    const sunSVG = `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`;
+    const moonSVG = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+
+    function applyTheme(theme) {
+      const isLight = theme === 'light';
+      if (isLight) document.body.setAttribute('data-theme', 'light');
+      else document.body.removeAttribute('data-theme');
+      localStorage.setItem('cc_theme', theme);
+      document.getElementById('themeColorMeta').setAttribute('content', isLight ? '#f1f5f9' : '#090d16');
+      document.getElementById('themeIcon').innerHTML = isLight ? moonSVG : sunSVG;
+      if (typeof chart !== 'undefined') {
+        chart.options.scales.y.grid.color = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.05)';
+        chart.update();
+      }
+    }
+    applyTheme(localStorage.getItem('cc_theme') || 'dark');
+
+    document.getElementById('themeBtn').addEventListener('click', () => {
+      const next = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      applyTheme(next);
+    });
+
+    // Password Show/Hide
+    const loginPass = document.getElementById('loginPass');
+    const togglePassBtn = document.getElementById('togglePassBtn');
+    togglePassBtn.addEventListener('click', () => {
+      const hidden = loginPass.type === 'password';
+      loginPass.type = hidden ? 'text' : 'password';
+      togglePassBtn.innerText = hidden ? 'Hide' : 'Show';
+    });
+
+    // Firebase Auth Login
+    const loginForm = document.getElementById('loginForm');
+    const loginErr = document.getElementById('loginErr');
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginErr.style.display = 'none';
+      loginSubmitBtn.disabled = true;
+      loginSubmitBtn.innerText = 'Signing in...';
+      try {
+        await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value.trim(), loginPass.value);
+      } catch (err) {
+        loginErr.style.display = 'block';
+        loginErr.innerText = err.code === 'auth/invalid-credential'
+          ? 'Invalid email or password. Please try again.'
+          : err.message;
+      } finally {
+        loginSubmitBtn.disabled = false;
+        loginSubmitBtn.innerText = 'Sign In';
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
     // Settings
     let config = {
@@ -377,18 +549,13 @@
       if (currentEntries.length) renderAll(currentEntries);
     });
 
-    // Leaflet Dark Map Setup
-    const map = L.map('map', { zoomControl: false }).setView([31.3916, 74.2414], 13);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap',
-      maxZoom: 19
-    }).addTo(map);
-    
-
+    // Leaflet Map (Attribution Disabled)
+    const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([31.3916, 74.2414], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
     const truckIcon = L.divIcon({
       className: 'custom-pin',
-      html: `<div style="width:18px;height:18px;background:#38bdf8;border:3px solid #fff;border-radius:50%;box-shadow:0 0 14px #38bdf8;"></div>`,
+      html: `<div style="width:18px;height:18px;background:#0284c7;border:3px solid #fff;border-radius:50%;box-shadow:0 0 14px #38bdf8;"></div>`,
       iconSize: [18, 18], iconAnchor: [9, 9]
     });
     const marker = L.marker([31.3916, 74.2414], { icon: truckIcon }).addTo(map).bindPopup("<b>Truck 01</b><br>Cold Chain Unit");
@@ -402,7 +569,6 @@
       badge.className = sourceLabel.includes('Live') ? 'pill ok' : 'pill cold';
     }
 
-    // Phone GPS Demo Button
     document.getElementById('phoneGpsBtn').addEventListener('click', () => {
       if (!navigator.geolocation) return alert("GPS not supported on this browser.");
       navigator.geolocation.getCurrentPosition(
@@ -422,7 +588,7 @@
       });
     });
 
-    // Sleek Gradient Chart
+    // Smooth Gradient Chart
     let activeMetric = 'temp';
     const ctx = document.getElementById('tempChart').getContext('2d');
     const blueGrad = ctx.createLinearGradient(0, 0, 0, 200);
@@ -438,19 +604,12 @@
       data: {
         labels: [],
         datasets: [{
-          data: [],
-          borderColor: '#38bdf8',
-          backgroundColor: blueGrad,
-          borderWidth: 2.5,
-          pointRadius: 0,
-          pointHoverRadius: 5,
-          tension: 0.4,
-          fill: true
+          data: [], borderColor: '#38bdf8', backgroundColor: blueGrad,
+          borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, tension: 0.4, fill: true
         }]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
+        responsive: true, maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: { display: false },
@@ -478,15 +637,11 @@
       chart.data.labels = recent.map(e => (e.timestamp.split(' ')[1] || e.timestamp).slice(0, 8));
       const ds = chart.data.datasets[0];
       if (activeMetric === 'temp') {
-        ds.label = 'Temp (°C)';
-        ds.data = recent.map(e => e.temperature);
-        ds.borderColor = '#38bdf8';
-        ds.backgroundColor = blueGrad;
+        ds.label = 'Temp (°C)'; ds.data = recent.map(e => e.temperature);
+        ds.borderColor = '#38bdf8'; ds.backgroundColor = blueGrad;
       } else {
-        ds.label = 'Humidity (%)';
-        ds.data = recent.map(e => e.humidity);
-        ds.borderColor = '#10b981';
-        ds.backgroundColor = greenGrad;
+        ds.label = 'Humidity (%)'; ds.data = recent.map(e => e.humidity);
+        ds.borderColor = '#10b981'; ds.backgroundColor = greenGrad;
       }
       chart.update();
     }
@@ -551,7 +706,7 @@
         const isHot = e.temperature > config.maxTemp, isCold = e.temperature < config.minTemp;
         const badge = isHot ? '<span class="pill hot">High</span>' : isCold ? '<span class="pill cold">Freeze</span>' : e.humidity > config.maxHum ? '<span class="pill hum">Hum</span>' : '<span class="pill ok">Safe</span>';
         return `<tr><td>${(e.timestamp.split(' ')[1] || e.timestamp).slice(0,8)}</td><td>${e.temperature}°C</td><td>${e.humidity}%</td><td>${badge}</td></tr>`;
-      }).join('') || '<tr><td colspan="4" style="text-align:center;color:#64748b;">No records</td></tr>';
+      }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted);">No records</td></tr>';
     }
 
     function renderAll(entries) {
@@ -567,7 +722,6 @@
       document.getElementById('dewVal').innerText = `${dp} °C`;
       document.getElementById('dewSub').innerText = (latest.temperature - dp < 2) ? "Moisture Risk" : "Dry & Safe";
 
-      // Battery
       const batVal = document.getElementById('batVal'), batSub = document.getElementById('batSub'), batBar = document.getElementById('batBar');
       if (typeof latest.battery === 'number') {
         const b = Math.max(0, Math.min(100, latest.battery));
@@ -575,15 +729,13 @@
         batBar.style.background = b > 50 ? '#10b981' : b > 20 ? '#f59e0b' : '#ef4444';
         batSub.innerText = b > 50 ? "Health: Good" : b > 20 ? "Health: Moderate" : "Low Battery";
       } else {
-        batVal.innerText = "USB / --"; batBar.style.width = "100%"; batBar.style.background = "#334155"; batSub.innerText = "External Power";
+        batVal.innerText = "USB / --"; batBar.style.width = "100%"; batBar.style.background = "var(--surface-2)"; batSub.innerText = "External Power";
       }
 
-      // Live GPS from Firebase (if sent by ESP32)
       if (typeof latest.lat === 'number' && typeof latest.lng === 'number') {
         updateMap(latest.lat, latest.lng, "Live GPS Sensor");
       }
 
-      // Status
       const statusBox = document.getElementById('statusBox');
       let alertTriggered = false;
       if (latest.temperature > config.maxTemp) {
@@ -602,7 +754,6 @@
         lastAlertTime = latest.timestamp;
       }
 
-      // Analytics
       const temps = entries.map(e => e.temperature);
       const breaches = entries.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp).length;
       document.getElementById('statMin').innerText = `${Math.min(...temps).toFixed(1)}°C`;
@@ -615,11 +766,29 @@
       renderTable(entries);
     }
 
-    onValue(query(ref(db, 'logistics/truck_01'), limitToLast(50)), (snap) => {
-      const data = snap.val();
-      if (!data) return;
-      currentEntries = Object.values(data);
-      renderAll(currentEntries);
+    // Auth State Observer
+    let unsubscribeDb = null;
+    onAuthStateChanged(auth, (user) => {
+      document.getElementById('authLoader').style.display = 'none';
+      if (user) {
+        document.getElementById('loginView').style.display = 'none';
+        document.getElementById('appView').style.display = 'block';
+        document.getElementById('userEmailLbl').innerText = user.email;
+        setTimeout(() => map.invalidateSize(), 200);
+
+        if (!unsubscribeDb) {
+          unsubscribeDb = onValue(query(ref(db, 'logistics/truck_01'), limitToLast(50)), (snap) => {
+            const data = snap.val();
+            if (!data) return;
+            currentEntries = Object.values(data);
+            renderAll(currentEntries);
+          });
+        }
+      } else {
+        if (unsubscribeDb) { unsubscribeDb(); unsubscribeDb = null; }
+        document.getElementById('appView').style.display = 'none';
+        document.getElementById('loginView').style.display = 'flex';
+      }
     });
   </script>
 </body>
