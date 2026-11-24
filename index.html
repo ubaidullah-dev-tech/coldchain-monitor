@@ -436,7 +436,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { initializeAuth, browserLocalPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getDatabase, ref, query, limitToLast, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
@@ -452,7 +452,7 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    const auth = initializeAuth(app, { persistence: browserLocalPersistence });
     const db = getDatabase(app);
 
     // Theme (Dark / Light)
@@ -766,9 +766,19 @@
       renderTable(entries);
     }
 
-    // Auth State Observer
+    // Auth State Observer with 3s Fallback
     let unsubscribeDb = null;
+    let authResolved = false;
+
+    setTimeout(() => {
+      if (!authResolved) {
+        document.getElementById('authLoader').style.display = 'none';
+        document.getElementById('loginView').style.display = 'flex';
+      }
+    }, 3000);
+
     onAuthStateChanged(auth, (user) => {
+      authResolved = true;
       document.getElementById('authLoader').style.display = 'none';
       if (user) {
         document.getElementById('loginView').style.display = 'none';
