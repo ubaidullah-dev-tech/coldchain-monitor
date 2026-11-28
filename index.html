@@ -18,11 +18,13 @@
 
   <style>
     :root {
-      --bg: #070b14;
+      --bg: #060a13;
       --surface: #0f172a;
       --surface-2: #1e293b;
-      --header-bg: rgba(15, 23, 42, 0.88);
+      --surface-glass: rgba(15, 23, 42, 0.78);
+      --header-bg: rgba(10, 16, 30, 0.86);
       --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
       --text: #f8fafc;
       --muted: #94a3b8;
       --blue: #38bdf8;
@@ -31,15 +33,17 @@
       --red: #ef4444;
       --amber: #f59e0b;
       --purple: #a78bfa;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
     }
 
     [data-theme="light"] {
       --bg: #f1f5f9;
       --surface: #ffffff;
       --surface-2: #e2e8f0;
+      --surface-glass: rgba(255, 255, 255, 0.85);
       --header-bg: rgba(255, 255, 255, 0.9);
       --border: rgba(15, 23, 42, 0.08);
+      --border-strong: rgba(15, 23, 42, 0.14);
       --text: #0f172a;
       --muted: #64748b;
       --blue: #0284c7;
@@ -48,29 +52,38 @@
       --red: #dc2626;
       --amber: #d97706;
       --purple: #7c3aed;
-      --shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif !important; }
-    body { background: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; transition: background 0.25s, color 0.25s; }
+    body {
+      background: var(--bg);
+      background-image: radial-gradient(circle at 15% 0%, rgba(2, 132, 199, 0.09), transparent 45%),
+                        radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.06), transparent 40%);
+      color: var(--text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased;
+      transition: background 0.25s, color 0.25s;
+    }
+    .tabular { font-variant-numeric: tabular-nums; }
 
+    /* LOGIN VIEW */
     #loginView {
       min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 20px;
-      background: radial-gradient(circle at top right, rgba(2, 132, 199, 0.14), transparent 50%);
+      background: radial-gradient(circle at top right, rgba(2, 132, 199, 0.18), transparent 52%),
+                  radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 45%);
     }
     .login-card {
-      width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 22px; padding: 30px 24px; box-shadow: var(--shadow);
+      width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border-strong);
+      border-radius: 24px; padding: 32px 26px; box-shadow: var(--shadow);
     }
     .login-head { text-align: center; margin-bottom: 24px; }
     .login-logo {
-      width: 52px; height: 52px; border-radius: 16px; margin: 0 auto 14px auto;
+      width: 56px; height: 56px; border-radius: 17px; margin: 0 auto 14px auto;
       background: linear-gradient(135deg, #0284c7, #38bdf8);
       display: flex; align-items: center; justify-content: center; color: #fff;
-      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
+      box-shadow: 0 10px 24px rgba(2, 132, 199, 0.35);
     }
-    .login-head h1 { margin: 0; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.4px; }
-    .login-head p { margin: 6px 0 0 0; font-size: 0.8rem; color: var(--muted); }
+    .login-head h1 { margin: 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.4px; }
+    .login-head p { margin: 6px 0 0 0; font-size: 0.82rem; color: var(--muted); }
     .login-err {
       display: none; background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.35);
       color: var(--red); padding: 10px 12px; border-radius: 10px; font-size: 0.78rem; margin-bottom: 14px; font-weight: 500;
@@ -81,53 +94,71 @@
       background: none; border: none; color: var(--muted); font-size: 0.75rem; font-weight: 600; cursor: pointer; padding: 4px 6px;
     }
 
-    /* Extra bottom padding so floating nav never overlaps chart or tables */
-    #appView { display: none; padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); }
+    /* MAIN APP */
+    #appView { display: none; padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
 
     header {
-      background: var(--header-bg); backdrop-filter: blur(14px);
+      background: var(--header-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
       border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000;
     }
+    .header-inner {
+      width: 100%; max-width: 960px; margin: auto; display: flex; justify-content: space-between; align-items: center;
+    }
     .brand { display: flex; align-items: center; gap: 10px; }
     .brand-icon {
-      width: 36px; height: 36px; border-radius: 11px;
+      width: 38px; height: 38px; border-radius: 12px;
       background: linear-gradient(135deg, #0284c7, #38bdf8);
       display: flex; align-items: center; justify-content: center; color: #fff;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.28);
     }
-    .brand h1 { font-size: 0.98rem; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
-    .conn-badge { font-size: 0.7rem; margin-top: 2px; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 600; }
+    .brand h1 { font-size: 1rem; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
+    .conn-badge { font-size: 0.71rem; margin-top: 2px; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 600; }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: #64748b; }
-    .dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); animation: livePulse 2s infinite; }
     .dot.offline { background: var(--red); }
+    @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
 
     .header-actions { display: flex; align-items: center; gap: 8px; }
     .icon-btn {
       background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
-      width: 35px; height: 35px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+      width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+      transition: transform 0.15s, background 0.2s;
     }
+    .icon-btn:active { transform: scale(0.95); }
     .btn {
       background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
-      padding: 7px 11px; border-radius: 9px; font-size: 0.75rem; font-weight: 600;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
+      padding: 7px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; text-decoration: none;
     }
+    .btn:hover { border-color: var(--border-strong); }
     .btn.active { background: var(--blue-strong); border-color: var(--blue); color: #fff; }
-    .btn.primary { background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #fff; border: none; width: 100%; justify-content: center; padding: 12px; font-size: 0.88rem; margin-top: 6px; border-radius: 11px; }
-    .btn.danger { background: rgba(239, 68, 68, 0.14); color: var(--red); border-color: rgba(239, 68, 68, 0.3); width: 100%; justify-content: center; padding: 11px; font-size: 0.85rem; border-radius: 11px; }
+    .btn.primary { background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #fff; border: none; width: 100%; justify-content: center; padding: 12px; font-size: 0.88rem; margin-top: 6px; border-radius: 12px; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.28); }
+    .btn.danger { background: rgba(239, 68, 68, 0.14); color: var(--red); border-color: rgba(239, 68, 68, 0.3); width: 100%; justify-content: center; padding: 11px; font-size: 0.85rem; border-radius: 12px; }
 
-    .container { max-width: 720px; margin: auto; padding: 14px; }
+    .container { max-width: 960px; margin: auto; padding: 16px; }
     .tab-view { display: none; animation: fadeIn 0.22s ease; }
     .tab-view.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* HERO CARD */
     .hero-card {
-      background: linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(16, 185, 129, 0.07));
-      border: 1px solid rgba(56, 189, 248, 0.22);
-      border-radius: 16px; padding: 14px 16px; margin-bottom: 12px;
-      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.16), rgba(16, 185, 129, 0.08));
+      border: 1px solid rgba(56, 189, 248, 0.24);
+      border-radius: 18px; padding: 15px 17px; margin-bottom: 12px;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      box-shadow: var(--shadow);
     }
-    .hero-title { font-size: 0.92rem; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .hero-sub { font-size: 0.72rem; color: var(--muted); margin-top: 5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .hero-title { font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .hero-sub { font-size: 0.74rem; color: var(--muted); margin-top: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .hero-gps-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--surface-glass); border: 1px solid var(--border-strong);
+      color: var(--text); padding: 3px 9px; border-radius: 99px; font-size: 0.68rem; font-weight: 600;
+      cursor: pointer; transition: 0.2s;
+    }
+    .hero-gps-pill:hover { border-color: var(--blue); color: var(--blue); }
+
     .signal-bars { display: flex; align-items: flex-end; gap: 3px; height: 16px; justify-content: flex-end; }
     .signal-bars span { width: 3.5px; background: var(--green); border-radius: 2px; }
     .signal-bars span:nth-child(1) { height: 5px; }
@@ -136,9 +167,10 @@
     .signal-bars span:nth-child(4) { height: 16px; }
     .signal-bars.off span { background: var(--muted); opacity: 0.3; }
 
+    /* STATUS BANNER */
     .status {
       display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
-      padding: 11px 14px; border-radius: 12px; font-weight: 600; margin-bottom: 14px; font-size: 0.8rem; line-height: 1.4;
+      padding: 12px 16px; border-radius: 14px; font-weight: 600; margin-bottom: 14px; font-size: 0.82rem; line-height: 1.4;
     }
     .normal { background: rgba(16, 185, 129, 0.12); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.25); }
     .warn { background: rgba(245, 158, 11, 0.13); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.28); }
@@ -147,14 +179,28 @@
     .neutral { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
     @keyframes pulse { 50% { opacity: 0.65; } }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-    .card {
-      background: var(--surface); padding: 14px; border-radius: 16px; box-shadow: var(--shadow);
-      border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;
-      transition: opacity 0.25s, filter 0.25s;
+    /* METRIC GRIDS */
+    .grid-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    @media (min-width: 760px) {
+      .grid-metrics { grid-template-columns: repeat(4, 1fr); }
     }
-    /* Stale state dims cards and shows last-known badge */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+
+    .card {
+      background: var(--surface); padding: 15px; border-radius: 18px; box-shadow: var(--shadow);
+      border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;
+      transition: transform 0.2s, opacity 0.25s, filter 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0.85;
+    }
+    .card.accent-temp::before { background: linear-gradient(90deg, #0284c7, #38bdf8); }
+    .card.accent-hum::before { background: linear-gradient(90deg, #059669, #10b981); }
+    .card.accent-bat::before { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+    .card.accent-dew::before { background: linear-gradient(90deg, #d97706, #f59e0b); }
+
     .cards-stale .card { opacity: 0.68; filter: grayscale(45%); }
     .last-known-tag {
       display: none; font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
@@ -162,62 +208,77 @@
     }
     .cards-stale .last-known-tag { display: inline-block; }
 
-    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 4px; }
-    .card h2 { margin: 0; font-size: 0.67rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; font-weight: 700; }
-    .card .val { font-size: 1.55rem; font-weight: 800; letter-spacing: -0.5px; color: var(--blue); }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 4px; }
+    .card h2 { margin: 0; font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; font-weight: 700; }
+    .card .val { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.6px; color: var(--blue); line-height: 1.15; }
     .card .val.hum { color: var(--green); }
     .card .val.bat { color: var(--purple); }
     .card .val.bat-usb { font-size: 1.05rem; color: var(--text); font-weight: 700; }
     .card .val.dew { color: var(--amber); }
-    .card .sub { font-size: 0.7rem; color: var(--muted); margin-top: 6px; font-weight: 500; }
+    .card .sub { font-size: 0.72rem; color: var(--muted); margin-top: 7px; font-weight: 500; }
 
-    .meter-track { width: 100%; height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 9px; position: relative; }
+    .bat-header-right { display: flex; align-items: center; gap: 6px; }
+    .meter-track { width: 100%; height: 7px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 10px; position: relative; }
     .meter-fill { height: 100%; width: 0%; background: var(--blue); border-radius: 99px; transition: width 0.45s ease, background 0.3s; }
 
-    .box { background: var(--surface); padding: 15px; border-radius: 16px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+    /* BOXES & CONTROLS */
+    .box { background: var(--surface); padding: 16px; border-radius: 18px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
     .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
-    .box-header h3 { margin: 0; font-size: 0.88rem; font-weight: 700; color: var(--text); }
-    .seg-ctrl { display: inline-flex; background: var(--bg); padding: 3px; border-radius: 9px; border: 1px solid var(--border); }
+    .box-header h3 { margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--text); }
+    .seg-ctrl { display: inline-flex; background: var(--bg); padding: 3px; border-radius: 10px; border: 1px solid var(--border); }
     .seg-btn {
       background: transparent; border: none; color: var(--muted); font-size: 0.7rem; font-weight: 600;
-      padding: 5px 9px; border-radius: 7px; cursor: pointer; transition: 0.15s;
+      padding: 5px 10px; border-radius: 7px; cursor: pointer; transition: 0.15s;
     }
     .seg-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
 
-    /* Simplified 5-slot Time Filter Bar (1H, 24H, 7D, 1M, More) */
     .time-bar {
       display: grid; grid-template-columns: repeat(4, 1fr) 1.25fr; gap: 4px;
-      background: var(--bg); padding: 4px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg); padding: 4px; border-radius: 11px; border: 1px solid var(--border);
       margin-bottom: 12px;
     }
     .tf-btn, .tf-select {
-      background: transparent; border: none; color: var(--muted); font-size: 0.7rem; font-weight: 700;
-      padding: 6px 4px; border-radius: 7px; cursor: pointer; transition: 0.15s; text-align: center; outline: none;
+      background: transparent; border: none; color: var(--muted); font-size: 0.71rem; font-weight: 700;
+      padding: 6px 4px; border-radius: 8px; cursor: pointer; transition: 0.15s; text-align: center; outline: none;
     }
     .tf-btn.active, .tf-select.active { background: var(--blue-strong); color: #fff; }
     .tf-select option { background: var(--surface); color: var(--text); }
 
-    .chart-wrap { position: relative; height: 230px; width: 100%; }
-    .time { text-align: center; color: var(--muted); font-size: 0.74rem; margin-bottom: 14px; font-weight: 600; }
+    .chart-wrap { position: relative; height: 245px; width: 100%; }
+    .time { text-align: center; color: var(--muted); font-size: 0.75rem; margin-bottom: 14px; font-weight: 600; }
     .time.stale-time { color: var(--red); }
 
-    #map { height: 350px; width: 100%; border-radius: 14px; border: 1px solid var(--border); z-index: 1; }
+    /* MAP */
+    .map-shell { position: relative; }
+    #map { height: 390px; width: 100%; border-radius: 14px; border: 1px solid var(--border); z-index: 1; }
     .leaflet-control-attribution { display: none !important; }
     body:not([data-theme="light"]) .leaflet-tile-pane {
       filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
     }
+    .map-overlay-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;
+    }
+    .map-mini-stat {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 9px 10px;
+    }
+    .map-mini-stat span { display: block; font-size: 0.64rem; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+    .map-mini-stat strong { display: block; font-size: 0.95rem; font-weight: 800; margin-top: 2px; }
     .map-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.76rem; color: var(--muted); flex-wrap: wrap; gap: 8px; }
+    .map-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
+    /* TABLE */
+    .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-    th, td { padding: 10px 5px; text-align: left; border-bottom: 1px solid var(--border); }
+    th, td { padding: 10px 6px; text-align: left; border-bottom: 1px solid var(--border); }
     th { color: var(--muted); font-weight: 700; font-size: 0.68rem; text-transform: uppercase; }
-    .pill { padding: 3px 8px; border-radius: 99px; font-size: 0.68rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+    .pill { padding: 3px 8px; border-radius: 99px; font-size: 0.68rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
     .pill.ok { background: rgba(16,185,129,0.15); color: var(--green); }
     .pill.hot { background: rgba(239,68,68,0.15); color: var(--red); }
     .pill.cold { background: rgba(56,189,248,0.15); color: var(--blue); }
     .pill.hum { background: rgba(245,158,11,0.15); color: var(--amber); }
     .pill.neutral { background: var(--surface-2); color: var(--muted); }
 
+    /* SETTINGS */
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
     .field input {
@@ -227,19 +288,20 @@
     .field input:focus { border-color: var(--blue); }
     .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
 
+    /* BOTTOM NAV */
     .bottom-nav {
-      position: fixed; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); left: 14px; right: 14px; max-width: 690px; margin: auto;
-      background: var(--header-bg); backdrop-filter: blur(16px);
-      border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow);
+      position: fixed; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); left: 14px; right: 14px; max-width: 720px; margin: auto;
+      background: var(--header-bg); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-strong); border-radius: 20px; box-shadow: var(--shadow);
       display: grid; grid-template-columns: repeat(4, 1fr);
       padding: 8px 6px; z-index: 1000;
     }
     .nav-item {
-      background: none; border: none; color: var(--muted); font-size: 0.68rem; font-weight: 600;
+      background: none; border: none; color: var(--muted); font-size: 0.69rem; font-weight: 600;
       display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
-      padding: 6px 0; border-radius: 12px; transition: 0.2s;
+      padding: 7px 0; border-radius: 13px; transition: 0.2s;
     }
-    .nav-item.active { color: var(--blue); background: rgba(56, 189, 248, 0.1); }
+    .nav-item.active { color: var(--blue); background: rgba(56, 189, 248, 0.12); }
     .nav-item svg { width: 19px; height: 19px; stroke-width: 2.1; }
   </style>
 </head>
@@ -253,7 +315,7 @@
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
         </div>
         <h1>ColdChain Pro</h1>
-        <p>Cold-Chain Cargo & Fleet Monitor</p>
+        <p>Cold-Chain Cargo, GPS &amp; Logger Monitor</p>
       </div>
 
       <div id="loginErr" class="login-err"></div>
@@ -278,24 +340,26 @@
   <!-- 2. MAIN DASHBOARD -->
   <div id="appView">
     <header>
-      <div class="brand">
-        <div class="brand-icon">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+          </div>
+          <div>
+            <h1>ColdChain Pro</h1>
+            <div class="conn-badge"><span id="connDot" class="dot"></span><span id="connText">Connecting...</span></div>
+          </div>
         </div>
-        <div>
-          <h1>ColdChain Pro</h1>
-          <div class="conn-badge"><span id="connDot" class="dot"></span><span id="connText">Connecting...</span></div>
-        </div>
-      </div>
 
-      <div class="header-actions">
-        <button id="themeBtn" class="icon-btn" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
-          <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        </button>
-        <button id="soundBtn" class="btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-          <span>Muted</span>
-        </button>
+        <div class="header-actions">
+          <button id="themeBtn" class="icon-btn" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
+            <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
+          <button id="soundBtn" class="btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+            <span>Muted</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -308,58 +372,71 @@
               <span>Truck 01 • Reefer Unit</span>
               <span class="pill neutral" id="unitModeBadge">Connecting</span>
             </div>
-            <div class="hero-sub" id="lastBreachSummary">Checking breach history...</div>
+            <div class="hero-sub">
+              <span id="lastBreachSummary">Checking breach history...</span>
+              <button type="button" id="heroGpsPill" class="hero-gps-pill" title="Open live truck map">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span id="heroGpsText">GPS: Waiting...</span>
+              </button>
+            </div>
           </div>
           <div style="text-align:right;">
             <div class="signal-bars off" id="signalBars">
               <span></span><span></span><span></span><span></span>
             </div>
-            <div style="font-size:0.65rem; color:var(--muted); margin-top:4px; font-weight:600;" id="recordCountLbl">Loading...</div>
+            <div style="font-size:0.66rem; color:var(--muted); margin-top:5px; font-weight:600;" id="recordCountLbl">Loading...</div>
           </div>
         </div>
 
-        <div id="statusBox" class="status neutral">⏳ Connecting to sensor feed...</div>
+        <div id="statusBox" class="status neutral">⏳ Connecting to Firebase sensor feed...</div>
 
-        <div class="grid-2" id="metricGrid">
-          <div class="card">
+        <div class="grid-metrics" id="metricGrid">
+          <div class="card accent-temp">
             <div class="card-top">
               <h2>Temperature</h2>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
             </div>
-            <div id="tempVal" class="val" style="font-size:1.25rem;">Loading...</div>
+            <div id="tempVal" class="val tabular" style="font-size:1.25rem;">Loading...</div>
             <span class="last-known-tag">Last known</span>
             <div class="meter-track"><div id="tempMeter" class="meter-fill"></div></div>
             <div id="tempRangeTxt" class="sub">Safe: 2°C – 8°C</div>
           </div>
 
-          <div class="card">
+          <div class="card accent-hum">
             <div class="card-top">
               <h2>Humidity</h2>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
             </div>
-            <div id="humVal" class="val hum" style="font-size:1.25rem;">Loading...</div>
+            <div id="humVal" class="val hum tabular" style="font-size:1.25rem;">Loading...</div>
             <span class="last-known-tag">Last known</span>
             <div class="meter-track"><div id="humMeter" class="meter-fill" style="background:var(--green);"></div></div>
             <div id="humRangeTxt" class="sub">Limit: &lt; 75%</div>
           </div>
 
-          <div class="card">
+          <div class="card accent-bat">
             <div class="card-top">
-              <h2>Power / Battery</h2>
-              <span id="batHealthPill" class="pill neutral" style="font-size:0.62rem; padding:2px 6px;">Checking</span>
+              <h2>Logger Battery</h2>
+              <div class="bat-header-right">
+                <span id="batHealthPill" class="pill neutral" style="font-size:0.62rem; padding:2px 6px;">Checking</span>
+                <svg id="batSvg" width="19" height="14" viewBox="0 0 24 16" fill="none">
+                  <rect x="1" y="2" width="19" height="12" rx="2.5" stroke="#94a3b8" stroke-width="1.8"/>
+                  <path d="M21 5.5v5" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+                  <rect id="batSvgFill" x="3.2" y="4.2" width="14.6" height="7.6" rx="1.2" fill="#a78bfa"/>
+                </svg>
+              </div>
             </div>
-            <div id="batVal" class="val bat" style="font-size:1.15rem;">Loading...</div>
+            <div id="batVal" class="val bat tabular" style="font-size:1.15rem;">Loading...</div>
             <span class="last-known-tag">Last known</span>
             <div class="meter-track" id="batMeterWrap"><div id="batBar" class="meter-fill" style="background:var(--purple);"></div></div>
-            <div id="batSub" class="sub">Checking power source</div>
+            <div id="batSub" class="sub">Checking logger power</div>
           </div>
 
-          <div class="card">
+          <div class="card accent-dew">
             <div class="card-top">
               <h2>Dew Point</h2>
               <span id="dewRiskPill" class="pill neutral" style="font-size:0.62rem; padding:2px 6px;">Checking</span>
             </div>
-            <div id="dewVal" class="val dew" style="font-size:1.25rem;">Loading...</div>
+            <div id="dewVal" class="val dew tabular" style="font-size:1.25rem;">Loading...</div>
             <span class="last-known-tag">Last known</span>
             <div id="dewSub" class="sub" style="margin-top:16px;">Calculating condensation risk</div>
           </div>
@@ -373,6 +450,7 @@
             <div class="seg-ctrl">
               <button class="seg-btn active" data-metric="temp">Temp</button>
               <button class="seg-btn" data-metric="hum">Hum</button>
+              <button class="seg-btn" data-metric="bat">Battery</button>
               <button class="seg-btn" data-metric="both">Both</button>
             </div>
           </div>
@@ -398,13 +476,39 @@
       <section id="tab-map" class="tab-view">
         <div class="box">
           <div class="box-header">
-            <h3>Truck 01 — Location</h3>
-            <button id="phoneGpsBtn" class="btn">Test: Phone GPS</button>
+            <h3>Truck 01 — Live Location</h3>
+            <div class="map-actions">
+              <button id="centerTruckBtn" class="btn">Center Truck</button>
+              <button id="toggleRouteBtn" class="btn active">Route Trail</button>
+              <button id="phoneGpsBtn" class="btn">Test: Phone GPS</button>
+            </div>
           </div>
-          <div id="map"></div>
+
+          <div class="map-overlay-stats">
+            <div class="map-mini-stat">
+              <span>Temperature</span>
+              <strong id="mapTempLbl" style="color:var(--blue);" class="tabular">-- °C</strong>
+            </div>
+            <div class="map-mini-stat">
+              <span>Humidity</span>
+              <strong id="mapHumLbl" style="color:var(--green);" class="tabular">-- %</strong>
+            </div>
+            <div class="map-mini-stat">
+              <span>Logger Battery</span>
+              <strong id="mapBatLbl" style="color:var(--purple);" class="tabular">--</strong>
+            </div>
+          </div>
+
+          <div class="map-shell">
+            <div id="map"></div>
+          </div>
+
           <div class="map-meta">
-            <span id="gpsCoords">No GPS coordinates received</span>
-            <span id="gpsSource" class="pill neutral">No GPS fix</span>
+            <span id="gpsCoords" class="tabular">No GPS coordinates received</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <a id="gmapsLink" href="#" target="_blank" rel="noopener" class="btn" style="display:none; padding:4px 9px; font-size:0.7rem;">Open Maps ↗</a>
+              <span id="gpsSource" class="pill neutral">No GPS fix</span>
+            </div>
           </div>
         </div>
       </section>
@@ -423,20 +527,20 @@
         </div>
 
         <div class="grid-3">
-          <div class="card"><h2>Min</h2><div id="statMin" class="val" style="font-size:1.15rem; margin-top:4px;">Loading</div></div>
-          <div class="card"><h2>Avg</h2><div id="statAvg" class="val" style="font-size:1.15rem; margin-top:4px;">Loading</div></div>
-          <div class="card"><h2>Max</h2><div id="statMax" class="val" style="font-size:1.15rem; margin-top:4px;">Loading</div></div>
+          <div class="card"><h2>Min Temp</h2><div id="statMin" class="val tabular" style="font-size:1.15rem; margin-top:4px;">Loading</div></div>
+          <div class="card"><h2>Avg Temp</h2><div id="statAvg" class="val tabular" style="font-size:1.15rem; margin-top:4px;">Loading</div></div>
+          <div class="card"><h2>Max Temp</h2><div id="statMax" class="val tabular" style="font-size:1.15rem; margin-top:4px;">Loading</div></div>
         </div>
 
         <div class="grid-2">
           <div class="card">
             <h2>Compliance</h2>
-            <div id="statComp" class="val hum" style="font-size:1.45rem; margin-top:4px;">Loading</div>
+            <div id="statComp" class="val hum tabular" style="font-size:1.45rem; margin-top:4px;">Loading</div>
             <div class="sub" id="statSampleSub">Selected period</div>
           </div>
           <div class="card">
             <h2>Breaches</h2>
-            <div id="statBreach" class="val" style="font-size:1.45rem; color:var(--red); margin-top:4px;">0</div>
+            <div id="statBreach" class="val tabular" style="font-size:1.45rem; color:var(--red); margin-top:4px;">0</div>
             <div class="sub">Out-of-range events</div>
           </div>
         </div>
@@ -449,10 +553,12 @@
               <button id="csvBtn" class="btn">Export CSV</button>
             </div>
           </div>
-          <table>
-            <thead><tr><th>Date & Time</th><th>Temp</th><th>Hum</th><th>Status</th></tr></thead>
-            <tbody id="logTable"><tr><td colspan="4" style="text-align:center;color:var(--muted);">Loading logs...</td></tr></tbody>
-          </table>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date &amp; Time</th><th>Temp</th><th>Hum</th><th>Battery</th><th>Status</th></tr></thead>
+              <tbody id="logTable"><tr><td colspan="5" style="text-align:center;color:var(--muted);">Loading logs...</td></tr></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -463,6 +569,7 @@
           <div class="field"><label>Min Safe Temp (°C)</label><input type="number" step="0.5" id="inpMinTemp"></div>
           <div class="field"><label>Max Safe Temp (°C)</label><input type="number" step="0.5" id="inpMaxTemp"></div>
           <div class="field"><label>Max Safe Humidity (%)</label><input type="number" step="1" id="inpMaxHum"></div>
+          <div class="field"><label>Low Logger Battery Alert (%)</label><input type="number" step="1" min="5" max="50" id="inpLowBat"></div>
           <div class="toggle-row">
             <span>Vibrate on Alert (while app is open)</span>
             <input type="checkbox" id="inpVibe" style="width:18px; height:18px;">
@@ -472,11 +579,11 @@
         </div>
 
         <div class="box">
-          <div class="box-header"><h3>Operator Session & Device Info</h3></div>
+          <div class="box-header"><h3>Operator Session &amp; Device Info</h3></div>
           <p style="font-size:0.8rem; color:var(--muted); margin:0 0 12px 0; line-height:1.65;">
             <strong>Signed in as:</strong> <span id="userEmailLbl" style="color:var(--text);">Loading...</span><br>
             <strong>Auto-Lock Timer:</strong> Locks after 5 min of inactivity<br>
-            <strong>Hardware:</strong> Truck 01 (ESP32 + SHT31 + DS3231 • Micro-ROS)
+            <strong>Hardware:</strong> Truck 01 (ESP32 + SHT31 + DS3231 + GPS + Battery Monitor)
           </p>
           <button id="logoutBtn" class="btn danger">Sign Out</button>
         </div>
@@ -536,7 +643,7 @@
     localStorage.removeItem('cc_user_email');
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=4').then(r => r.update());
+      navigator.serviceWorker.register('./sw.js?v=4').then(r => r.update()).catch(() => {});
     }
 
     const firebaseConfig = {
@@ -554,7 +661,7 @@
     const db = getDatabase(app);
 
     const IDLE_LIMIT_MS = 5 * 60 * 1000;
-    const STALE_THRESHOLD_SEC = 180; // 3 minutes without data => stale warning
+    const STALE_THRESHOLD_SEC = 180;
 
     function clearSessionStorage() {
       sessionStorage.removeItem('cc_active_session');
@@ -653,17 +760,20 @@
       minTemp: parseFloat(localStorage.getItem('cc_minTemp') || '2.0'),
       maxTemp: parseFloat(localStorage.getItem('cc_maxTemp') || '8.0'),
       maxHum: parseFloat(localStorage.getItem('cc_maxHum') || '75.0'),
+      lowBat: parseFloat(localStorage.getItem('cc_lowBat') || '20'),
       vibe: localStorage.getItem('cc_vibe') !== 'false'
     };
     const inpMinTemp = document.getElementById('inpMinTemp');
     const inpMaxTemp = document.getElementById('inpMaxTemp');
     const inpMaxHum = document.getElementById('inpMaxHum');
+    const inpLowBat = document.getElementById('inpLowBat');
     const inpVibe = document.getElementById('inpVibe');
 
     function loadSettingsUI() {
       inpMinTemp.value = config.minTemp;
       inpMaxTemp.value = config.maxTemp;
       inpMaxHum.value = config.maxHum;
+      inpLowBat.value = config.lowBat;
       inpVibe.checked = config.vibe;
       document.getElementById('tempRangeTxt').innerText = `Safe: ${config.minTemp}°C – ${config.maxTemp}°C`;
       document.getElementById('humRangeTxt').innerText = `Limit: < ${config.maxHum}%`;
@@ -674,10 +784,12 @@
       config.minTemp = parseFloat(inpMinTemp.value);
       config.maxTemp = parseFloat(inpMaxTemp.value);
       config.maxHum = parseFloat(inpMaxHum.value);
+      config.lowBat = parseFloat(inpLowBat.value) || 20;
       config.vibe = inpVibe.checked;
       localStorage.setItem('cc_minTemp', config.minTemp);
       localStorage.setItem('cc_maxTemp', config.maxTemp);
       localStorage.setItem('cc_maxHum', config.maxHum);
+      localStorage.setItem('cc_lowBat', config.lowBat);
       localStorage.setItem('cc_vibe', config.vibe);
       loadSettingsUI();
       document.getElementById('saveMsg').innerText = "Settings saved successfully";
@@ -685,8 +797,41 @@
       if (allEntries.length) renderAll(allEntries);
     });
 
-    // Map Setup (No fake live location when GPS is absent)
-    let map = null, marker = null;
+    // Helper: Normalize telemetry record from Firebase (handles string numbers & common field aliases)
+    function toNum(v) {
+      if (typeof v === 'number' && !isNaN(v)) return v;
+      if (typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v))) return Number(v);
+      return null;
+    }
+
+    function normalizeEntry(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      const lat = toNum(raw.lat ?? raw.latitude ?? raw.gps?.lat);
+      const lng = toNum(raw.lng ?? raw.lon ?? raw.longitude ?? raw.gps?.lng ?? raw.gps?.lon);
+      const battery = toNum(raw.battery ?? raw.bat ?? raw.batt ?? raw.battery_pct);
+      const voltage = toNum(raw.voltage ?? raw.vbat ?? raw.bat_v);
+      const temperature = toNum(raw.temperature ?? raw.temp);
+      const humidity = toNum(raw.humidity ?? raw.hum);
+      if (temperature === null || humidity === null) return null;
+      return {
+        ...raw,
+        temperature,
+        humidity,
+        battery,
+        voltage,
+        lat: (lat !== null && lat !== 0) ? lat : null,
+        lng: (lng !== null && lng !== 0) ? lng : null
+      };
+    }
+
+    function computeBatteryPct(entry) {
+      if (entry.battery !== null) return Math.max(0, Math.min(100, Math.round(entry.battery)));
+      if (entry.voltage !== null) return Math.max(0, Math.min(100, Math.round(((entry.voltage - 3.3) / (4.2 - 3.3)) * 100)));
+      return null;
+    }
+
+    // Map Setup + Route Trail
+    let map = null, marker = null, routeLine = null, showRoute = true, lastGpsFix = null;
     try {
       if (window.L) {
         map = L.map('map', { zoomControl: false, attributionControl: false }).setView([31.3916, 74.2414], 11);
@@ -694,46 +839,84 @@
       }
     } catch (e) {}
 
-    function updateMap(lat, lng, sourceLabel) {
+    function updateMap(lat, lng, sourceLabel, latestEntry = null) {
+      lastGpsFix = { lat, lng };
       if (map && window.L) {
+        const batPct = latestEntry ? computeBatteryPct(latestEntry) : null;
+        const popupHtml = latestEntry
+          ? `<div style="font-family:Inter,sans-serif;font-size:12px;line-height:1.5;">
+               <strong>Truck 01</strong> (${sourceLabel})<br>
+               Temp: <b>${latestEntry.temperature}°C</b> • Hum: <b>${latestEntry.humidity}%</b><br>
+               Logger Bat: <b>${batPct !== null ? batPct + '%' : 'USB'}</b>
+             </div>`
+          : `<strong>Truck 01</strong><br>${sourceLabel}`;
+
         if (!marker) {
           const truckIcon = L.divIcon({
             className: 'custom-pin',
-            html: `<div style="width:18px;height:18px;background:#0284c7;border:3px solid #fff;border-radius:50%;box-shadow:0 0 14px #38bdf8;"></div>`,
-            iconSize: [18, 18], iconAnchor: [9, 9]
+            html: `<div style="width:20px;height:20px;background:#0284c7;border:3px solid #fff;border-radius:50%;box-shadow:0 0 16px #38bdf8;"></div>`,
+            iconSize: [20, 20], iconAnchor: [10, 10]
           });
-          marker = L.marker([lat, lng], { icon: truckIcon }).addTo(map);
+          marker = L.marker([lat, lng], { icon: truckIcon }).addTo(map).bindPopup(popupHtml);
         } else {
           marker.setLatLng([lat, lng]);
+          marker.setPopupContent(popupHtml);
         }
         map.setView([lat, lng], 14);
       }
-      document.getElementById('gpsCoords').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+
+      document.getElementById('gpsCoords').innerText = `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
+      document.getElementById('heroGpsText').innerText = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      const gmapsLink = document.getElementById('gmapsLink');
+      gmapsLink.href = `https://www.google.com/maps?q=${lat},${lng}`;
+      gmapsLink.style.display = 'inline-flex';
+
       const badge = document.getElementById('gpsSource');
       badge.innerText = sourceLabel;
       badge.className = sourceLabel.includes('Sensor') ? 'pill ok' : 'pill cold';
     }
 
+    function updateRouteTrail(entries) {
+      if (!map || !window.L) return;
+      if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
+      if (!showRoute) return;
+      const pts = entries.filter(e => e.lat !== null && e.lng !== null).map(e => [e.lat, e.lng]);
+      if (pts.length > 1) {
+        routeLine = L.polyline(pts.slice(-200), { color: '#38bdf8', weight: 3.5, opacity: 0.75, dashArray: '6, 6' }).addTo(map);
+      }
+    }
+
+    document.getElementById('centerTruckBtn').addEventListener('click', () => {
+      if (map && lastGpsFix) map.setView([lastGpsFix.lat, lastGpsFix.lng], 15, { animate: true });
+    });
+
+    const toggleRouteBtn = document.getElementById('toggleRouteBtn');
+    toggleRouteBtn.addEventListener('click', () => {
+      showRoute = !showRoute;
+      toggleRouteBtn.classList.toggle('active', showRoute);
+      updateRouteTrail(allEntries);
+    });
+
     document.getElementById('phoneGpsBtn').addEventListener('click', () => {
       if (!navigator.geolocation) return alert("GPS not supported on this browser.");
       navigator.geolocation.getCurrentPosition(
-        pos => updateMap(pos.coords.latitude, pos.coords.longitude, "Test: Phone GPS"),
+        pos => updateMap(pos.coords.latitude, pos.coords.longitude, "Test: Phone GPS", allEntries[allEntries.length - 1] || null),
         () => alert("Please allow Location permission in your browser.")
       );
     });
 
-    // Bottom Navigation
-    document.querySelectorAll('.nav-item').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
-        if (btn.dataset.tab === 'tab-map' && map) setTimeout(() => map.invalidateSize(), 150);
-      });
-    });
+    function switchTab(tabId) {
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+      document.querySelectorAll('.tab-view').forEach(t => t.classList.toggle('active', t.id === tabId));
+      if (tabId === 'tab-map' && map) setTimeout(() => map.invalidateSize(), 150);
+    }
 
-    // Shared Time Filter (1H, 24H, 7D, 1M, More: 1Y / All)
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+    document.getElementById('heroGpsPill').addEventListener('click', () => switchTab('tab-map'));
+
+    // Shared Time Filter
     let activeRange = 'all';
     const rangeMsMap = {
       '1h': 3600 * 1000,
@@ -745,8 +928,10 @@
     };
 
     function parseTs(ts) {
-      if (!ts) return NaN;
-      return new Date(ts.replace(' ', 'T')).getTime();
+      if (ts === null || ts === undefined) return NaN;
+      if (typeof ts === 'number') return ts < 1e12 ? ts * 1000 : ts;
+      if (typeof ts === 'string') return new Date(ts.replace(' ', 'T')).getTime();
+      return NaN;
     }
 
     function formatDuration(sec) {
@@ -789,12 +974,12 @@
       document.getElementById(id).addEventListener('change', (e) => syncTimeControls(e.target.value));
     });
 
-    // Chart Setup: Straight lines (tension: 0) + Red breach dots + Reference lines
-    let activeMetric = 'temp', blueGrad = null, greenGrad = null;
+    // Chart Setup
+    let activeMetric = 'temp', blueGrad = null, greenGrad = null, purpleGrad = null;
     const thresholdPlugin = {
       id: 'thresholdLines',
       afterDatasetsDraw(c) {
-        if (activeMetric === 'hum') return;
+        if (activeMetric === 'hum' || activeMetric === 'bat') return;
         const { ctx, chartArea: { left, right }, scales: { y } } = c;
         if (!y) return;
         const drawLine = (val, color, label) => {
@@ -821,13 +1006,17 @@
     try {
       if (window.Chart) {
         const ctx = document.getElementById('tempChart').getContext('2d');
-        blueGrad = ctx.createLinearGradient(0, 0, 0, 220);
+        blueGrad = ctx.createLinearGradient(0, 0, 0, 230);
         blueGrad.addColorStop(0, 'rgba(56, 189, 248, 0.28)');
         blueGrad.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
 
-        greenGrad = ctx.createLinearGradient(0, 0, 0, 220);
+        greenGrad = ctx.createLinearGradient(0, 0, 0, 230);
         greenGrad.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
         greenGrad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+        purpleGrad = ctx.createLinearGradient(0, 0, 0, 230);
+        purpleGrad.addColorStop(0, 'rgba(167, 139, 250, 0.28)');
+        purpleGrad.addColorStop(1, 'rgba(167, 139, 250, 0.0)');
 
         chart = new Chart(ctx, {
           type: 'line',
@@ -858,7 +1047,13 @@
 
     function formatChartLabel(ts) {
       if (!ts) return '';
-      const parts = ts.split(' ');
+      if (typeof ts === 'number') {
+        const d = new Date(ts < 1e12 ? ts * 1000 : ts);
+        return (activeRange === '1h' || activeRange === '24h')
+          ? d.toTimeString().slice(0, 5)
+          : d.toISOString().slice(5, 10);
+      }
+      const parts = String(ts).split(' ');
       if (activeRange === '1h' || activeRange === '24h') return (parts[1] || ts).slice(0, 5);
       return (parts[0] || ts).slice(5);
     }
@@ -894,6 +1089,14 @@
           borderWidth: 2, tension: 0, fill: true, yAxisID: 'y',
           pointRadius: sampled.map(e => e.humidity > config.maxHum ? 3.5 : 0),
           pointBackgroundColor: '#f59e0b', pointHoverRadius: 5
+        }];
+      } else if (activeMetric === 'bat') {
+        chart.data.datasets = [{
+          label: 'Logger Battery (%)', data: sampled.map(e => computeBatteryPct(e)),
+          borderColor: '#a78bfa', backgroundColor: purpleGrad,
+          borderWidth: 2, tension: 0, fill: true, yAxisID: 'y', spanGaps: true,
+          pointRadius: sampled.map(e => { const b = computeBatteryPct(e); return (b !== null && b <= config.lowBat) ? 3.5 : 0; }),
+          pointBackgroundColor: '#ef4444', pointHoverRadius: 5
         }];
       } else {
         chart.data.datasets = [
@@ -941,14 +1144,13 @@
       const subset = filterByRange(allEntries, activeRange);
       if (!subset.length) return;
       let csv = "Timestamp,Temperature (C),Humidity (%),Battery (%),Voltage (V),Lat,Lng\n";
-      subset.forEach(e => csv += `${e.timestamp},${e.temperature},${e.humidity},${e.battery ?? ''},${e.voltage ?? ''},${e.lat ?? ''},${e.lng ?? ''}\n`);
+      subset.forEach(e => csv += `${e.timestamp},${e.temperature},${e.humidity},${computeBatteryPct(e) ?? ''},${e.voltage ?? ''},${e.lat ?? ''},${e.lng ?? ''}\n`);
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
       a.download = `coldchain_truck01_${activeRange}.csv`;
       a.click();
     });
 
-    // Core Freshness, Stale-Data & Status Evaluator
     function evaluateFreshnessAndBanner() {
       const dot = document.getElementById('connDot');
       const txt = document.getElementById('connText');
@@ -975,7 +1177,7 @@
 
       if (isOnline) {
         dot.className = "dot online"; txt.innerText = "Truck 01 • Online";
-        bars.classList.remove('off'); badge.className = "pill ok"; badge.innerText = "✓ Online";
+        bars.classList.remove('off'); badge.className = "pill ok"; badge.innerText = "✓ Live";
       } else {
         dot.className = "dot offline"; txt.innerText = "Truck 01 • Offline";
         bars.classList.add('off'); badge.className = "pill hot"; badge.innerText = "✕ Offline";
@@ -991,12 +1193,13 @@
         return;
       }
 
-      // Fresh data path
       grid.classList.remove('cards-stale');
       lastUp.classList.remove('stale-time');
       lastUp.innerText = `Last Telemetry: ${latest.timestamp}`;
 
+      const batPct = computeBatteryPct(latest);
       let alertTriggered = false;
+
       if (latest.temperature > config.maxTemp) {
         statusBox.className = "status alert";
         statusBox.innerText = `✕ BREACH: Overheat ${latest.temperature}°C (Max ${config.maxTemp}°C)`;
@@ -1008,6 +1211,9 @@
       } else if (latest.humidity > config.maxHum) {
         statusBox.className = "status warn";
         statusBox.innerText = `⚠ WARNING: High Humidity ${latest.humidity}% (Max ${config.maxHum}%)`;
+      } else if (batPct !== null && batPct <= config.lowBat) {
+        statusBox.className = "status warn";
+        statusBox.innerText = `⚠ WARNING: Logger Battery Low (${batPct}%) — Charge device soon`;
       } else {
         statusBox.className = "status normal";
         statusBox.innerText = "✓ OK — Cooling Normal, All Parameters Safe";
@@ -1032,6 +1238,8 @@
       if (onlyBreaches) list = list.filter(e => e.temperature > config.maxTemp || e.temperature < config.minTemp || e.humidity > config.maxHum);
       document.getElementById('logTable').innerHTML = list.slice(0, 40).map(e => {
         const isHot = e.temperature > config.maxTemp, isCold = e.temperature < config.minTemp;
+        const batPct = computeBatteryPct(e);
+        const batCell = batPct !== null ? `${batPct}%` : 'USB';
         const badge = isHot
           ? '<span class="pill hot">✕ High</span>'
           : isCold
@@ -1039,8 +1247,8 @@
           : e.humidity > config.maxHum
           ? '<span class="pill hum">⚠ Hum</span>'
           : '<span class="pill ok">✓ OK</span>';
-        return `<tr><td style="font-size:0.72rem;color:var(--muted);">${e.timestamp}</td><td><strong>${e.temperature}°C</strong></td><td>${e.humidity}%</td><td>${badge}</td></tr>`;
-      }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted);">No records in this time range</td></tr>';
+        return `<tr><td style="font-size:0.72rem;color:var(--muted);">${e.timestamp}</td><td class="tabular"><strong>${e.temperature}°C</strong></td><td class="tabular">${e.humidity}%</td><td class="tabular">${batCell}</td><td>${badge}</td></tr>`;
+      }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);">No records in this time range</td></tr>';
     }
 
     function renderFilteredViews() {
@@ -1105,6 +1313,9 @@
       humEl.style.fontSize = '1.6rem';
       humEl.innerText = `${latest.humidity} %`;
 
+      document.getElementById('mapTempLbl').innerText = `${latest.temperature} °C`;
+      document.getElementById('mapHumLbl').innerText = `${latest.humidity} %`;
+
       const tempPct = Math.max(5, Math.min(100, ((latest.temperature + 10) / 45) * 100));
       const tempMeter = document.getElementById('tempMeter');
       tempMeter.style.width = `${tempPct}%`;
@@ -1115,7 +1326,7 @@
       humMeter.style.width = `${humPct}%`;
       humMeter.style.background = latest.humidity > config.maxHum ? '#f59e0b' : '#10b981';
 
-      // Dew Point with real Low / Medium / High risk status
+      // Dew Point
       const dp = calcDewPoint(latest.temperature, latest.humidity);
       const spread = latest.temperature - dp;
       const dewEl = document.getElementById('dewVal');
@@ -1134,52 +1345,60 @@
         dewSub.innerText = 'Low risk — Dry & safe';
       }
 
-      // Clean Power / Battery Card (no confusing "USB / --")
+      // Logger Device Battery Card
       const batVal = document.getElementById('batVal');
       const batSub = document.getElementById('batSub');
       const batBar = document.getElementById('batBar');
       const batMeterWrap = document.getElementById('batMeterWrap');
       const batPill = document.getElementById('batHealthPill');
+      const batSvgFill = document.getElementById('batSvgFill');
 
-      let batPct = null;
-      if (typeof latest.battery === 'number') {
-        batPct = Math.max(0, Math.min(100, Math.round(latest.battery)));
-      } else if (typeof latest.voltage === 'number') {
-        batPct = Math.max(0, Math.min(100, Math.round(((latest.voltage - 3.3) / (4.2 - 3.3)) * 100)));
-      }
-
+      const batPct = computeBatteryPct(latest);
       if (batPct !== null) {
-        batVal.className = 'val bat';
+        batVal.className = 'val bat tabular';
         batVal.style.fontSize = '1.6rem';
         batVal.innerText = `${batPct} %`;
+        document.getElementById('mapBatLbl').innerText = `${batPct} %`;
         batMeterWrap.style.display = 'block';
         batBar.style.width = `${batPct}%`;
-        const vTxt = typeof latest.voltage === 'number' ? ` • ${latest.voltage.toFixed(2)}V` : '';
+        batSvgFill.setAttribute('width', ((14.6 * batPct) / 100).toFixed(1));
+        const vTxt = latest.voltage !== null ? ` • ${latest.voltage.toFixed(2)}V` : '';
         if (batPct > 60) {
           batBar.style.background = '#10b981';
+          batSvgFill.setAttribute('fill', '#10b981');
           batPill.className = 'pill ok'; batPill.innerText = '✓ Healthy';
-          batSub.innerText = `Good backup${vTxt}`;
-        } else if (batPct > 25) {
+          batSub.innerText = `Logger battery good${vTxt}`;
+        } else if (batPct > config.lowBat) {
           batBar.style.background = '#f59e0b';
+          batSvgFill.setAttribute('fill', '#f59e0b');
           batPill.className = 'pill hum'; batPill.innerText = '⚠ Moderate';
-          batSub.innerText = `Charge soon${vTxt}`;
+          batSub.innerText = `Charge logger soon${vTxt}`;
         } else {
           batBar.style.background = '#ef4444';
+          batSvgFill.setAttribute('fill', '#ef4444');
           batPill.className = 'pill hot'; batPill.innerText = '✕ Low';
-          batSub.innerText = `Critical battery${vTxt}`;
+          batSub.innerText = `Critical logger battery${vTxt}`;
         }
       } else {
         batVal.className = 'val bat-usb';
         batVal.style.fontSize = '1.05rem';
         batVal.innerText = "Powered by USB";
+        document.getElementById('mapBatLbl').innerText = "USB";
         batMeterWrap.style.display = 'none';
+        batSvgFill.setAttribute('width', '14.6');
+        batSvgFill.setAttribute('fill', '#38bdf8');
         batPill.className = 'pill neutral'; batPill.innerText = 'External';
-        batSub.innerText = "Battery sensor not connected";
+        batSub.innerText = "Awaiting battery voltage";
       }
 
-      if (typeof latest.lat === 'number' && typeof latest.lng === 'number') {
-        updateMap(latest.lat, latest.lng, "Live GPS Sensor");
+      // Truck GPS Location (use latest GPS fix from entries)
+      const latestGpsEntry = [...entries].reverse().find(e => e.lat !== null && e.lng !== null);
+      if (latestGpsEntry) {
+        updateMap(latestGpsEntry.lat, latestGpsEntry.lng, "Live GPS Sensor", latest);
+      } else {
+        document.getElementById('heroGpsText').innerText = "GPS: No fix";
       }
+      updateRouteTrail(entries);
 
       updateLastBreachSummary(entries);
       evaluateFreshnessAndBanner();
@@ -1202,7 +1421,11 @@
         if (!unsubscribeDb) {
           unsubscribeDb = onValue(query(ref(db, 'logistics/truck_01'), limitToLast(2000)), (snap) => {
             const data = snap.val();
-            allEntries = data ? Object.values(data) : [];
+            const rawList = data ? Object.values(data) : [];
+            allEntries = rawList
+              .map(normalizeEntry)
+              .filter(Boolean)
+              .sort((a, b) => (parseTs(a.timestamp) || 0) - (parseTs(b.timestamp) || 0));
             renderAll(allEntries);
           });
         }
