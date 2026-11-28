@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ColdChain Pro</title>
+  <title>ColdChain Pro — Fleet &amp; Cargo Telemetry</title>
   <link rel="manifest" href="manifest.json">
-  <meta id="themeColorMeta" name="theme-color" content="#070b14">
+  <meta id="themeColorMeta" name="theme-color" content="#050811">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,13 +18,13 @@
 
   <style>
     :root {
-      --bg: #060a13;
-      --surface: #0f172a;
-      --surface-2: #1e293b;
-      --surface-glass: rgba(15, 23, 42, 0.78);
-      --header-bg: rgba(10, 16, 30, 0.86);
-      --border: rgba(255, 255, 255, 0.08);
-      --border-strong: rgba(255, 255, 255, 0.14);
+      --bg: #050811;
+      --surface: #0c1322;
+      --surface-2: #162033;
+      --surface-glass: rgba(12, 19, 34, 0.78);
+      --header-bg: rgba(8, 12, 24, 0.84);
+      --border: rgba(148, 163, 184, 0.12);
+      --border-strong: rgba(148, 163, 184, 0.22);
       --text: #f8fafc;
       --muted: #94a3b8;
       --blue: #38bdf8;
@@ -33,17 +33,18 @@
       --red: #ef4444;
       --amber: #f59e0b;
       --purple: #a78bfa;
-      --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      --shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+      --inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     [data-theme="light"] {
       --bg: #f1f5f9;
       --surface: #ffffff;
       --surface-2: #e2e8f0;
-      --surface-glass: rgba(255, 255, 255, 0.85);
-      --header-bg: rgba(255, 255, 255, 0.9);
+      --surface-glass: rgba(255, 255, 255, 0.88);
+      --header-bg: rgba(255, 255, 255, 0.92);
       --border: rgba(15, 23, 42, 0.08);
-      --border-strong: rgba(15, 23, 42, 0.14);
+      --border-strong: rgba(15, 23, 42, 0.15);
       --text: #0f172a;
       --muted: #64748b;
       --blue: #0284c7;
@@ -52,14 +53,16 @@
       --red: #dc2626;
       --amber: #d97706;
       --purple: #7c3aed;
-      --shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+      --shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+      --inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif !important; }
     body {
       background: var(--bg);
-      background-image: radial-gradient(circle at 15% 0%, rgba(2, 132, 199, 0.09), transparent 45%),
-                        radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.06), transparent 40%);
+      background-image:
+        radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.1), transparent 42%),
+        radial-gradient(circle at 88% 8%, rgba(16, 185, 129, 0.07), transparent 38%);
       color: var(--text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased;
       transition: background 0.25s, color 0.25s;
     }
@@ -68,25 +71,26 @@
     /* LOGIN VIEW */
     #loginView {
       min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 20px;
-      background: radial-gradient(circle at top right, rgba(2, 132, 199, 0.18), transparent 52%),
-                  radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 45%);
+      background:
+        radial-gradient(circle at 80% 15%, rgba(56, 189, 248, 0.16), transparent 48%),
+        radial-gradient(circle at 15% 85%, rgba(16, 185, 129, 0.11), transparent 45%);
     }
     .login-card {
-      width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border-strong);
-      border-radius: 24px; padding: 32px 26px; box-shadow: var(--shadow);
+      width: 100%; max-width: 410px; background: var(--surface); border: 1px solid var(--border-strong);
+      border-radius: 24px; padding: 34px 28px; box-shadow: var(--shadow), var(--inner-highlight);
     }
-    .login-head { text-align: center; margin-bottom: 24px; }
+    .login-head { text-align: center; margin-bottom: 26px; }
     .login-logo {
-      width: 56px; height: 56px; border-radius: 17px; margin: 0 auto 14px auto;
+      width: 58px; height: 58px; border-radius: 18px; margin: 0 auto 14px auto;
       background: linear-gradient(135deg, #0284c7, #38bdf8);
       display: flex; align-items: center; justify-content: center; color: #fff;
-      box-shadow: 0 10px 24px rgba(2, 132, 199, 0.35);
+      box-shadow: 0 12px 28px rgba(2, 132, 199, 0.38);
     }
-    .login-head h1 { margin: 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.4px; }
+    .login-head h1 { margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
     .login-head p { margin: 6px 0 0 0; font-size: 0.82rem; color: var(--muted); }
     .login-err {
       display: none; background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.35);
-      color: var(--red); padding: 10px 12px; border-radius: 10px; font-size: 0.78rem; margin-bottom: 14px; font-weight: 500;
+      color: var(--red); padding: 10px 12px; border-radius: 11px; font-size: 0.78rem; margin-bottom: 14px; font-weight: 500;
     }
     .pass-wrap { position: relative; }
     .pass-toggle {
@@ -95,37 +99,37 @@
     }
 
     /* MAIN APP */
-    #appView { display: none; padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
+    #appView { display: none; padding-bottom: calc(116px + env(safe-area-inset-bottom, 0px)); }
 
     header {
-      background: var(--header-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000;
+      background: var(--header-bg); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      padding: 12px 16px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000;
     }
     .header-inner {
-      width: 100%; max-width: 960px; margin: auto; display: flex; justify-content: space-between; align-items: center;
+      width: 100%; max-width: 980px; margin: auto; display: flex; justify-content: space-between; align-items: center;
     }
-    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand { display: flex; align-items: center; gap: 11px; }
     .brand-icon {
       width: 38px; height: 38px; border-radius: 12px;
       background: linear-gradient(135deg, #0284c7, #38bdf8);
       display: flex; align-items: center; justify-content: center; color: #fff;
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.28);
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
     }
-    .brand h1 { font-size: 1rem; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
+    .brand h1 { font-size: 1.02rem; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
     .conn-badge { font-size: 0.71rem; margin-top: 2px; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 600; }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: #64748b; }
     .dot.online { background: var(--green); box-shadow: 0 0 8px var(--green); animation: livePulse 2s infinite; }
     .dot.offline { background: var(--red); }
-    @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+    @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
     .header-actions { display: flex; align-items: center; gap: 8px; }
     .icon-btn {
       background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
       width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
-      transition: transform 0.15s, background 0.2s;
+      transition: transform 0.15s, border-color 0.2s;
     }
-    .icon-btn:active { transform: scale(0.95); }
+    .icon-btn:hover { border-color: var(--border-strong); }
+    .icon-btn:active { transform: scale(0.94); }
     .btn {
       background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
       padding: 7px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;
@@ -133,28 +137,38 @@
     }
     .btn:hover { border-color: var(--border-strong); }
     .btn.active { background: var(--blue-strong); border-color: var(--blue); color: #fff; }
-    .btn.primary { background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #fff; border: none; width: 100%; justify-content: center; padding: 12px; font-size: 0.88rem; margin-top: 6px; border-radius: 12px; box-shadow: 0 6px 18px rgba(2, 132, 199, 0.28); }
+    .btn.primary {
+      background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #fff; border: none;
+      width: 100%; justify-content: center; padding: 12px; font-size: 0.88rem; margin-top: 6px;
+      border-radius: 12px; box-shadow: 0 8px 20px rgba(2, 132, 199, 0.3);
+    }
     .btn.danger { background: rgba(239, 68, 68, 0.14); color: var(--red); border-color: rgba(239, 68, 68, 0.3); width: 100%; justify-content: center; padding: 11px; font-size: 0.85rem; border-radius: 12px; }
 
-    .container { max-width: 960px; margin: auto; padding: 16px; }
+    .container { max-width: 980px; margin: auto; padding: 16px; }
     .tab-view { display: none; animation: fadeIn 0.22s ease; }
     .tab-view.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* HERO CARD */
+    /* HERO UNIT CARD */
     .hero-card {
-      background: linear-gradient(135deg, rgba(2, 132, 199, 0.16), rgba(16, 185, 129, 0.08));
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(16, 185, 129, 0.06));
       border: 1px solid rgba(56, 189, 248, 0.24);
-      border-radius: 18px; padding: 15px 17px; margin-bottom: 12px;
-      display: flex; justify-content: space-between; align-items: center; gap: 12px;
-      box-shadow: var(--shadow);
+      border-radius: 20px; padding: 16px 18px; margin-bottom: 12px;
+      display: flex; justify-content: space-between; align-items: center; gap: 14px;
+      box-shadow: var(--shadow), var(--inner-highlight);
     }
-    .hero-title { font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .hero-left { display: flex; align-items: center; gap: 13px; min-width: 0; }
+    .hero-truck-badge {
+      width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
+      background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(56, 189, 248, 0.28);
+      display: flex; align-items: center; justify-content: center; color: var(--blue);
+    }
+    .hero-title { font-size: 0.96rem; font-weight: 800; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .hero-sub { font-size: 0.74rem; color: var(--muted); margin-top: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .hero-gps-pill {
       display: inline-flex; align-items: center; gap: 5px;
       background: var(--surface-glass); border: 1px solid var(--border-strong);
-      color: var(--text); padding: 3px 9px; border-radius: 99px; font-size: 0.68rem; font-weight: 600;
+      color: var(--text); padding: 4px 10px; border-radius: 99px; font-size: 0.69rem; font-weight: 600;
       cursor: pointer; transition: 0.2s;
     }
     .hero-gps-pill:hover { border-color: var(--blue); color: var(--blue); }
@@ -171,31 +185,32 @@
     .status {
       display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
       padding: 12px 16px; border-radius: 14px; font-weight: 600; margin-bottom: 14px; font-size: 0.82rem; line-height: 1.4;
+      box-shadow: var(--inner-highlight);
     }
-    .normal { background: rgba(16, 185, 129, 0.12); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.25); }
-    .warn { background: rgba(245, 158, 11, 0.13); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.28); }
-    .alert { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.4); animation: pulse 1.2s infinite; }
+    .normal { background: rgba(16, 185, 129, 0.12); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.26); }
+    .warn { background: rgba(245, 158, 11, 0.13); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .alert { background: rgba(239, 68, 68, 0.16); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.42); animation: pulse 1.2s infinite; }
     .stale { background: rgba(239, 68, 68, 0.12); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.32); }
     .neutral { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
     @keyframes pulse { 50% { opacity: 0.65; } }
 
     /* METRIC GRIDS */
     .grid-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-    @media (min-width: 760px) {
+    @media (min-width: 780px) {
       .grid-metrics { grid-template-columns: repeat(4, 1fr); }
     }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
 
     .card {
-      background: var(--surface); padding: 15px; border-radius: 18px; box-shadow: var(--shadow);
+      background: var(--surface); padding: 16px; border-radius: 18px;
+      box-shadow: var(--shadow), var(--inner-highlight);
       border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between;
-      transition: transform 0.2s, opacity 0.25s, filter 0.25s;
+      transition: transform 0.2s, border-color 0.2s, opacity 0.25s, filter 0.25s;
       position: relative; overflow: hidden;
     }
-    .card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0.85;
-    }
+    .card:hover { border-color: var(--border-strong); }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0.9; }
     .card.accent-temp::before { background: linear-gradient(90deg, #0284c7, #38bdf8); }
     .card.accent-hum::before { background: linear-gradient(90deg, #059669, #10b981); }
     .card.accent-bat::before { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
@@ -208,23 +223,29 @@
     }
     .cards-stale .last-known-tag { display: inline-block; }
 
-    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 4px; }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 6px; }
+    .card-icon-badge {
+      width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;
+    }
     .card h2 { margin: 0; font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; font-weight: 700; }
-    .card .val { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.6px; color: var(--blue); line-height: 1.15; }
+    .card .val { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.6px; color: var(--blue); line-height: 1.15; }
     .card .val.hum { color: var(--green); }
     .card .val.bat { color: var(--purple); }
     .card .val.bat-usb { font-size: 1.05rem; color: var(--text); font-weight: 700; }
     .card .val.dew { color: var(--amber); }
-    .card .sub { font-size: 0.72rem; color: var(--muted); margin-top: 7px; font-weight: 500; }
+    .card .sub { font-size: 0.72rem; color: var(--muted); margin-top: 8px; font-weight: 500; }
 
     .bat-header-right { display: flex; align-items: center; gap: 6px; }
     .meter-track { width: 100%; height: 7px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 10px; position: relative; }
     .meter-fill { height: 100%; width: 0%; background: var(--blue); border-radius: 99px; transition: width 0.45s ease, background 0.3s; }
 
     /* BOXES & CONTROLS */
-    .box { background: var(--surface); padding: 16px; border-radius: 18px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .box {
+      background: var(--surface); padding: 17px; border-radius: 18px; margin-bottom: 14px;
+      border: 1px solid var(--border); box-shadow: var(--shadow), var(--inner-highlight);
+    }
     .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
-    .box-header h3 { margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--text); }
+    .box-header h3 { margin: 0; font-size: 0.92rem; font-weight: 700; color: var(--text); }
     .seg-ctrl { display: inline-flex; background: var(--bg); padding: 3px; border-radius: 10px; border: 1px solid var(--border); }
     .seg-btn {
       background: transparent; border: none; color: var(--muted); font-size: 0.7rem; font-weight: 600;
@@ -244,33 +265,49 @@
     .tf-btn.active, .tf-select.active { background: var(--blue-strong); color: #fff; }
     .tf-select option { background: var(--surface); color: var(--text); }
 
-    .chart-wrap { position: relative; height: 245px; width: 100%; }
+    .chart-wrap { position: relative; height: 250px; width: 100%; }
     .time { text-align: center; color: var(--muted); font-size: 0.75rem; margin-bottom: 14px; font-weight: 600; }
     .time.stale-time { color: var(--red); }
 
-    /* MAP */
+    /* MAP & PULSING TRUCK PIN */
     .map-shell { position: relative; }
-    #map { height: 390px; width: 100%; border-radius: 14px; border: 1px solid var(--border); z-index: 1; }
+    #map { height: 400px; width: 100%; border-radius: 14px; border: 1px solid var(--border); z-index: 1; }
     .leaflet-control-attribution { display: none !important; }
     body:not([data-theme="light"]) .leaflet-tile-pane {
       filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
     }
-    .map-overlay-stats {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;
+    .truck-radar-pin { position: relative; width: 24px; height: 24px; }
+    .truck-radar-ring {
+      position: absolute; inset: -6px; border-radius: 50%;
+      background: rgba(56, 189, 248, 0.35);
+      animation: radarPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
     }
-    .map-mini-stat {
-      background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 9px 10px;
+    .truck-radar-core {
+      position: relative; width: 20px; height: 20px; margin: 2px;
+      background: #0284c7; border: 3px solid #fff; border-radius: 50%;
+      box-shadow: 0 0 14px #38bdf8;
     }
-    .map-mini-stat span { display: block; font-size: 0.64rem; color: var(--muted); font-weight: 700; text-transform: uppercase; }
-    .map-mini-stat strong { display: block; font-size: 0.95rem; font-weight: 800; margin-top: 2px; }
+    @keyframes radarPing {
+      0% { transform: scale(0.7); opacity: 0.9; }
+      100% { transform: scale(2.1); opacity: 0; }
+    }
+
+    .map-overlay-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+    .map-mini-stat { background: var(--bg); border: 1px solid var(--border); border-radius: 13px; padding: 10px 12px; }
+    .map-mini-stat span { display: block; font-size: 0.64rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+    .map-mini-stat strong { display: block; font-size: 0.98rem; font-weight: 800; margin-top: 3px; }
     .map-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.76rem; color: var(--muted); flex-wrap: wrap; gap: 8px; }
     .map-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
     /* TABLE */
-    .table-wrap { overflow-x: auto; }
+    .table-wrap { overflow-x: auto; max-height: 420px; overflow-y: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
     th, td { padding: 10px 6px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { color: var(--muted); font-weight: 700; font-size: 0.68rem; text-transform: uppercase; }
+    th {
+      color: var(--muted); font-weight: 700; font-size: 0.68rem; text-transform: uppercase;
+      position: sticky; top: 0; background: var(--surface); z-index: 2;
+    }
+    tbody tr:hover { background: rgba(148, 163, 184, 0.05); }
     .pill { padding: 3px 8px; border-radius: 99px; font-size: 0.68rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
     .pill.ok { background: rgba(16,185,129,0.15); color: var(--green); }
     .pill.hot { background: rgba(239,68,68,0.15); color: var(--red); }
@@ -282,26 +319,26 @@
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
     .field input {
-      width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border);
-      background: var(--bg); color: var(--text); font-size: 0.88rem; outline: none;
+      width: 100%; padding: 11px 12px; border-radius: 11px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-size: 0.88rem; outline: none; transition: border-color 0.2s;
     }
     .field input:focus { border-color: var(--blue); }
-    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
 
     /* BOTTOM NAV */
     .bottom-nav {
       position: fixed; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); left: 14px; right: 14px; max-width: 720px; margin: auto;
-      background: var(--header-bg); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-      border: 1px solid var(--border-strong); border-radius: 20px; box-shadow: var(--shadow);
+      background: var(--header-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-strong); border-radius: 22px; box-shadow: var(--shadow);
       display: grid; grid-template-columns: repeat(4, 1fr);
       padding: 8px 6px; z-index: 1000;
     }
     .nav-item {
       background: none; border: none; color: var(--muted); font-size: 0.69rem; font-weight: 600;
       display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
-      padding: 7px 0; border-radius: 13px; transition: 0.2s;
+      padding: 7px 0; border-radius: 14px; transition: 0.2s;
     }
-    .nav-item.active { color: var(--blue); background: rgba(56, 189, 248, 0.12); }
+    .nav-item.active { color: var(--blue); background: rgba(56, 189, 248, 0.13); }
     .nav-item svg { width: 19px; height: 19px; stroke-width: 2.1; }
   </style>
 </head>
@@ -312,7 +349,7 @@
     <div class="login-card">
       <div class="login-head">
         <div class="login-logo">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
         </div>
         <h1>ColdChain Pro</h1>
         <p>Cold-Chain Cargo, GPS &amp; Logger Monitor</p>
@@ -367,20 +404,25 @@
       <!-- TAB 1: LIVE -->
       <section id="tab-live" class="tab-view active">
         <div class="hero-card">
-          <div>
-            <div class="hero-title">
-              <span>Truck 01 • Reefer Unit</span>
-              <span class="pill neutral" id="unitModeBadge">Connecting</span>
+          <div class="hero-left">
+            <div class="hero-truck-badge">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
             </div>
-            <div class="hero-sub">
-              <span id="lastBreachSummary">Checking breach history...</span>
-              <button type="button" id="heroGpsPill" class="hero-gps-pill" title="Open live truck map">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span id="heroGpsText">GPS: Waiting...</span>
-              </button>
+            <div>
+              <div class="hero-title">
+                <span>Truck 01 • Reefer Unit</span>
+                <span class="pill neutral" id="unitModeBadge">Connecting</span>
+              </div>
+              <div class="hero-sub">
+                <span id="lastBreachSummary">Checking breach history...</span>
+                <button type="button" id="heroGpsPill" class="hero-gps-pill" title="Open live truck map">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <span id="heroGpsText">GPS: Waiting...</span>
+                </button>
+              </div>
             </div>
           </div>
-          <div style="text-align:right;">
+          <div style="text-align:right; flex-shrink:0;">
             <div class="signal-bars off" id="signalBars">
               <span></span><span></span><span></span><span></span>
             </div>
@@ -394,7 +436,9 @@
           <div class="card accent-temp">
             <div class="card-top">
               <h2>Temperature</h2>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+              <span class="card-icon-badge" style="background:rgba(56,189,248,0.12); color:#38bdf8;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+              </span>
             </div>
             <div id="tempVal" class="val tabular" style="font-size:1.25rem;">Loading...</div>
             <span class="last-known-tag">Last known</span>
@@ -405,7 +449,9 @@
           <div class="card accent-hum">
             <div class="card-top">
               <h2>Humidity</h2>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              <span class="card-icon-badge" style="background:rgba(16,185,129,0.12); color:#10b981;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              </span>
             </div>
             <div id="humVal" class="val hum tabular" style="font-size:1.25rem;">Loading...</div>
             <span class="last-known-tag">Last known</span>
@@ -418,7 +464,7 @@
               <h2>Logger Battery</h2>
               <div class="bat-header-right">
                 <span id="batHealthPill" class="pill neutral" style="font-size:0.62rem; padding:2px 6px;">Checking</span>
-                <svg id="batSvg" width="19" height="14" viewBox="0 0 24 16" fill="none">
+                <svg id="batSvg" width="20" height="14" viewBox="0 0 24 16" fill="none">
                   <rect x="1" y="2" width="19" height="12" rx="2.5" stroke="#94a3b8" stroke-width="1.8"/>
                   <path d="M21 5.5v5" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
                   <rect id="batSvgFill" x="3.2" y="4.2" width="14.6" height="7.6" rx="1.2" fill="#a78bfa"/>
@@ -701,7 +747,7 @@
       if (isLight) document.body.setAttribute('data-theme', 'light');
       else document.body.removeAttribute('data-theme');
       localStorage.setItem('cc_theme', theme);
-      document.getElementById('themeColorMeta').setAttribute('content', isLight ? '#f1f5f9' : '#070b14');
+      document.getElementById('themeColorMeta').setAttribute('content', isLight ? '#f1f5f9' : '#050811');
       document.getElementById('themeIcon').innerHTML = isLight ? moonSVG : sunSVG;
       if (chart) {
         chart.options.scales.y.grid.color = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.05)';
@@ -797,7 +843,7 @@
       if (allEntries.length) renderAll(allEntries);
     });
 
-    // Helper: Normalize telemetry record from Firebase (handles string numbers & common field aliases)
+    // Helper: Normalize telemetry record from Firebase
     function toNum(v) {
       if (typeof v === 'number' && !isNaN(v)) return v;
       if (typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v))) return Number(v);
@@ -830,7 +876,7 @@
       return null;
     }
 
-    // Map Setup + Route Trail
+    // Map Setup + Pulsing Radar Truck Pin + Route Trail
     let map = null, marker = null, routeLine = null, showRoute = true, lastGpsFix = null;
     try {
       if (window.L) {
@@ -854,8 +900,8 @@
         if (!marker) {
           const truckIcon = L.divIcon({
             className: 'custom-pin',
-            html: `<div style="width:20px;height:20px;background:#0284c7;border:3px solid #fff;border-radius:50%;box-shadow:0 0 16px #38bdf8;"></div>`,
-            iconSize: [20, 20], iconAnchor: [10, 10]
+            html: `<div class="truck-radar-pin"><div class="truck-radar-ring"></div><div class="truck-radar-core"></div></div>`,
+            iconSize: [24, 24], iconAnchor: [12, 12]
           });
           marker = L.marker([lat, lng], { icon: truckIcon }).addTo(map).bindPopup(popupHtml);
         } else {
@@ -882,7 +928,7 @@
       if (!showRoute) return;
       const pts = entries.filter(e => e.lat !== null && e.lng !== null).map(e => [e.lat, e.lng]);
       if (pts.length > 1) {
-        routeLine = L.polyline(pts.slice(-200), { color: '#38bdf8', weight: 3.5, opacity: 0.75, dashArray: '6, 6' }).addTo(map);
+        routeLine = L.polyline(pts.slice(-200), { color: '#38bdf8', weight: 3.5, opacity: 0.78, dashArray: '6, 6' }).addTo(map);
       }
     }
 
@@ -1006,15 +1052,15 @@
     try {
       if (window.Chart) {
         const ctx = document.getElementById('tempChart').getContext('2d');
-        blueGrad = ctx.createLinearGradient(0, 0, 0, 230);
+        blueGrad = ctx.createLinearGradient(0, 0, 0, 235);
         blueGrad.addColorStop(0, 'rgba(56, 189, 248, 0.28)');
         blueGrad.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
 
-        greenGrad = ctx.createLinearGradient(0, 0, 0, 230);
+        greenGrad = ctx.createLinearGradient(0, 0, 0, 235);
         greenGrad.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
         greenGrad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
 
-        purpleGrad = ctx.createLinearGradient(0, 0, 0, 230);
+        purpleGrad = ctx.createLinearGradient(0, 0, 0, 235);
         purpleGrad.addColorStop(0, 'rgba(167, 139, 250, 0.28)');
         purpleGrad.addColorStop(1, 'rgba(167, 139, 250, 0.0)');
 
@@ -1306,11 +1352,11 @@
       document.getElementById('recordCountLbl').innerText = `${entries.length} logs`;
 
       const tempEl = document.getElementById('tempVal');
-      tempEl.style.fontSize = '1.6rem';
+      tempEl.style.fontSize = '1.65rem';
       tempEl.innerText = `${latest.temperature} °C`;
 
       const humEl = document.getElementById('humVal');
-      humEl.style.fontSize = '1.6rem';
+      humEl.style.fontSize = '1.65rem';
       humEl.innerText = `${latest.humidity} %`;
 
       document.getElementById('mapTempLbl').innerText = `${latest.temperature} °C`;
@@ -1332,7 +1378,7 @@
       const dewEl = document.getElementById('dewVal');
       const dewPill = document.getElementById('dewRiskPill');
       const dewSub = document.getElementById('dewSub');
-      dewEl.style.fontSize = '1.6rem';
+      dewEl.style.fontSize = '1.65rem';
       dewEl.innerText = `${dp} °C`;
       if (spread < 2) {
         dewPill.className = 'pill hot'; dewPill.innerText = '✕ High';
@@ -1356,7 +1402,7 @@
       const batPct = computeBatteryPct(latest);
       if (batPct !== null) {
         batVal.className = 'val bat tabular';
-        batVal.style.fontSize = '1.6rem';
+        batVal.style.fontSize = '1.65rem';
         batVal.innerText = `${batPct} %`;
         document.getElementById('mapBatLbl').innerText = `${batPct} %`;
         batMeterWrap.style.display = 'block';
@@ -1391,7 +1437,7 @@
         batSub.innerText = "Awaiting battery voltage";
       }
 
-      // Truck GPS Location (use latest GPS fix from entries)
+      // Truck GPS Location
       const latestGpsEntry = [...entries].reverse().find(e => e.lat !== null && e.lng !== null);
       if (latestGpsEntry) {
         updateMap(latestGpsEntry.lat, latestGpsEntry.lng, "Live GPS Sensor", latest);
